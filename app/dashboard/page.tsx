@@ -1,6 +1,8 @@
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Megaphone, Wrench, Clock, CaretRight, CheckSquareOffset } from "@phosphor-icons/react/dist/ssr";
+"use client";
+
+import { motion } from "framer-motion";
+import { Megaphone, Wrench, Clock, CaretRight, CheckSquareOffset, Student, GraduationCap, Code } from "@phosphor-icons/react";
+import Link from "next/link";
 
 const announcements = [
   {
@@ -37,87 +39,161 @@ const pendingAssignments = [
 ];
 
 export default function DashboardPage() {
-  return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome back, Innovator</h1>
-        <p className="mt-2 text-slate-600 dark:text-zinc-400">Here's what's happening in your courses today.</p>
-      </header>
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, staggerChildren: 0.1 } }
+  };
 
-      {/* Grid Layout: Stacks vertically on mobile, 2 columns on tablet/desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        
-        {/* Left Column: Announcements */}
-        <section className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Megaphone size={28} weight="fill" className="text-blue-600 dark:text-blue-500" />
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Class Announcements</h2>
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fa] font-sans text-slate-800 selection:bg-[#ffcb05] selection:text-black p-4 md:p-8 relative overflow-hidden">
+      {/* Animated Colorful Background */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#dc0a2d] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-[#ffcb05] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-[#43a047] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
+
+      <style jsx global>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        .neo-shadow {
+          box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+        }
+        .neo-shadow-sm {
+          box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+        }
+      `}</style>
+
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 mx-auto max-w-6xl space-y-8"
+      >
+        <header className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-3 bg-white border-2 border-black px-4 py-2 neo-shadow-sm mb-4 rounded-lg">
+              <GraduationCap size={24} className="text-[#dc0a2d]" weight="fill" />
+              <span className="text-sm font-black uppercase tracking-wider text-black">Student Portal</span>
+            </motion.div>
+            <motion.h1 variants={itemVariants} className="text-3xl md:text-4xl font-black uppercase text-black tracking-tight">
+              Welcome back, <span className="text-[#dc0a2d]">Alex</span>
+            </motion.h1>
+            <motion.p variants={itemVariants} className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
+              Let's continue learning
+            </motion.p>
           </div>
           
-          {announcements.map((announcement) => (
-            <Card key={announcement.id} className={`border-l-4 ${announcement.isImportant ? 'border-l-red-500' : 'border-l-slate-300 dark:border-l-zinc-700'}`}>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start gap-4">
-                  <CardTitle className="text-lg leading-tight">{announcement.title}</CardTitle>
-                  <span className="text-xs font-medium text-slate-500 whitespace-nowrap">{announcement.date}</span>
+          <motion.div variants={itemVariants}>
+             <div className="bg-white border-4 border-black p-2 neo-shadow rounded-xl flex items-center gap-4">
+                <div className="w-12 h-12 bg-slate-100 rounded-full border-2 border-black flex items-center justify-center overflow-hidden">
+                  <Student size={28} weight="fill" className="text-slate-700" />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-slate-600 dark:text-zinc-300">{announcement.content}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </section>
+                <div className="flex flex-col pr-4">
+                  <span className="text-xs text-slate-500 uppercase font-black">Current Module</span>
+                  <span className="text-sm text-black uppercase font-black">Robotics 101</span>
+                </div>
+             </div>
+          </motion.div>
+        </header>
 
-        {/* Right Column: Pending Assignments */}
-        <section className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Wrench size={28} weight="fill" className="text-orange-600 dark:text-orange-500" />
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Pending Assignments</h2>
-          </div>
-
-          {pendingAssignments.length > 0 ? (
-            pendingAssignments.map((assignment) => (
-              <Card key={assignment.id} className="group transition-shadow hover:shadow-md">
-                <CardHeader className="pb-2">
-                  <CardDescription className="font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-xs">
-                    {assignment.course}
-                  </CardDescription>
-                  <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-zinc-400">
-                    <div className="flex items-center gap-1.5 font-medium text-amber-600 dark:text-amber-500">
-                      <Clock size={16} weight="bold" />
-                      <span>Due: {assignment.dueDate}</span>
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          
+          {/* Left Column: Announcements */}
+          <motion.section variants={itemVariants} className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2 bg-white border-4 border-black rounded-xl px-4 py-3 neo-shadow w-fit">
+              <div className="bg-[#ffcb05] p-2 rounded-lg border-2 border-black">
+                <Megaphone size={20} weight="fill" className="text-black" />
+              </div>
+              <h2 className="text-base font-black text-black uppercase tracking-wide">Academy News</h2>
+            </div>
+            
+            <div className="space-y-4">
+              {announcements.map((announcement) => (
+                <div key={announcement.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                  {announcement.isImportant && (
+                    <div className="absolute top-0 right-0 px-3 py-1 bg-[#dc0a2d] border-b-4 border-l-4 border-black rounded-bl-xl font-black text-white text-[10px] uppercase tracking-wider">
+                      Important
                     </div>
-                    <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-xs font-medium">
-                      {assignment.type}
-                    </span>
+                  )}
+                  <div className="flex justify-between items-start gap-4 mb-3">
+                    <h3 className="text-sm font-black leading-tight uppercase text-black max-w-[80%]">{announcement.title}</h3>
                   </div>
-                </CardContent>
-                <CardFooter>
-                  <Button className="w-full sm:w-auto min-h-[44px]" variant="default">
-                    Start Assignment
-                    <CaretRight weight="bold" className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
-          ) : (
-            <Card className="border-dashed border-2 bg-slate-50/50 dark:bg-zinc-900/50">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <CheckSquareOffset size={48} weight="light" className="text-emerald-500 mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 dark:text-white">All caught up!</h3>
-                <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1 max-w-[250px]">
-                  You have no pending robotics assignments at the moment.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </section>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed mb-4">{announcement.content}</p>
+                  <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 border-2 border-black rounded-md inline-block uppercase tracking-wider">{announcement.date}</span>
+                </div>
+              ))}
+            </div>
+          </motion.section>
 
-      </div>
+          {/* Right Column: Pending Assignments */}
+          <motion.section variants={itemVariants} className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2 bg-white border-4 border-black rounded-xl px-4 py-3 neo-shadow w-fit">
+              <div className="bg-[#43a047] p-2 rounded-lg border-2 border-black">
+                <Wrench size={20} weight="fill" className="text-white" />
+              </div>
+              <h2 className="text-base font-black text-black uppercase tracking-wide">Active Assignments</h2>
+            </div>
+
+            <div className="space-y-4">
+              {pendingAssignments.length > 0 ? (
+                pendingAssignments.map((assignment) => (
+                  <div key={assignment.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow hover:-translate-y-1 transition-transform">
+                    <div className="mb-4">
+                      <div className="text-[10px] font-black text-[#dc0a2d] uppercase tracking-widest mb-2 bg-red-50 inline-block px-2 py-1 border-2 border-[#dc0a2d] rounded-md">
+                        {assignment.course}
+                      </div>
+                      <h3 className="text-base font-black uppercase text-black leading-tight mt-1">{assignment.title}</h3>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-xs font-bold mb-5">
+                      <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 border-2 border-amber-600 rounded-md px-3 py-1.5">
+                        <Clock size={14} weight="bold" />
+                        <span className="uppercase">Due: {assignment.dueDate}</span>
+                      </div>
+                    </div>
+
+                    <Link href="#" className="w-full flex items-center justify-between px-5 py-4 bg-black rounded-lg text-white text-xs uppercase font-black border-2 border-black hover:bg-[#dc0a2d] hover:text-white transition-colors neo-shadow-sm hover:shadow-[4px_4px_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+                      <span>Begin Assignment</span>
+                      <CaretRight weight="bold" size={16} />
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-white border-4 border-dashed border-slate-300 rounded-xl p-10 flex flex-col items-center justify-center text-center">
+                  <div className="w-16 h-16 bg-green-100 border-4 border-green-500 rounded-full flex items-center justify-center mb-4">
+                    <CheckSquareOffset size={24} weight="bold" className="text-green-600" />
+                  </div>
+                  <h3 className="text-base font-black text-black uppercase mb-2">All Caught Up!</h3>
+                  <p className="text-xs text-slate-500 font-medium max-w-[200px]">
+                    You have no pending assignments. Review your past modules or explore the lab.
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.section>
+
+        </div>
+      </motion.div>
     </div>
   );
 }
+
+
