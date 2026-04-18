@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Megaphone, Wrench, Clock, CaretRight, CheckSquareOffset, Student, GraduationCap, Code } from "@phosphor-icons/react";
+import { Megaphone, Wrench, Clock, ChevronRight, CheckSquare, GraduationCap, PlayCircle, Trophy } from "lucide-react";
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const announcements = [
   {
@@ -24,17 +26,17 @@ const announcements = [
 const pendingAssignments = [
   {
     id: "a1",
-    course: "Autonomous Navigation",
+    course: "Intro to Arduino",
     title: "Implement PID Controller",
     dueDate: "Tomorrow, 11:59 PM",
     type: "Code Submission",
   },
   {
     id: "a2",
-    course: "Mechanical Design",
-    title: "Rover Chassis CAD",
+    course: "Drone Assembly",
+    title: "Propeller Calibration Report",
     dueDate: "Oct 20, 2026",
-    type: "CAD File (.step)",
+    type: "PDF Upload",
   },
 ];
 
@@ -50,12 +52,11 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans text-slate-800 selection:bg-[#ffcb05] selection:text-black p-4 md:p-8 relative overflow-hidden">
-      {/* Animated Colorful Background */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#dc0a2d] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-[#ffcb05] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-[#43a047] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
-
+    <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 relative overflow-hidden">
+      {/* Animated Colorful Background Blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#dc0a2d] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-[#ffcb05] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000 pointer-events-none"></div>
+      
       <style jsx global>{`
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
@@ -63,21 +64,10 @@ export default function DashboardPage() {
           66% { transform: translate(-20px, 20px) scale(0.9); }
           100% { transform: translate(0px, 0px) scale(1); }
         }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .neo-shadow {
-          box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-        }
-        .neo-shadow-sm {
-          box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-        }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .neo-shadow { box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+        .neo-shadow-sm { box-shadow: 2px 2px 0px 0px rgba(0,0,0,1); }
       `}</style>
 
       <motion.div 
@@ -88,10 +78,6 @@ export default function DashboardPage() {
       >
         <header className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-3 bg-white border-2 border-black px-4 py-2 neo-shadow-sm mb-4 rounded-lg">
-              <GraduationCap size={24} className="text-[#dc0a2d]" weight="fill" />
-              <span className="text-sm font-black uppercase tracking-wider text-black">Student Portal</span>
-            </motion.div>
             <motion.h1 variants={itemVariants} className="text-3xl md:text-4xl font-black uppercase text-black tracking-tight">
               Welcome back, <span className="text-[#dc0a2d]">Alex</span>
             </motion.h1>
@@ -99,101 +85,130 @@ export default function DashboardPage() {
               Let's continue learning
             </motion.p>
           </div>
-          
-          <motion.div variants={itemVariants}>
-             <div className="bg-white border-4 border-black p-2 neo-shadow rounded-xl flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-100 rounded-full border-2 border-black flex items-center justify-center overflow-hidden">
-                  <Student size={28} weight="fill" className="text-slate-700" />
-                </div>
-                <div className="flex flex-col pr-4">
-                  <span className="text-xs text-slate-500 uppercase font-black">Current Module</span>
-                  <span className="text-sm text-black uppercase font-black">Robotics 101</span>
-                </div>
-             </div>
-          </motion.div>
         </header>
 
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        {/* CSS Grid layout for cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           
-          {/* Left Column: Announcements */}
-          <motion.section variants={itemVariants} className="flex flex-col gap-4">
+          {/* Column 1: Progress & Up Next */}
+          <motion.div variants={itemVariants} className="space-y-6">
+            
+            {/* Progress Card */}
+            <Card className="border-4 border-black rounded-xl neo-shadow overflow-hidden bg-white">
+              <CardHeader className="pb-2 bg-[#ffcb05] border-b-4 border-black">
+                <CardTitle className="text-sm font-black uppercase flex items-center gap-2 text-black">
+                  <Trophy size={20} />
+                  Overall Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-end mb-2">
+                  <span className="text-xs font-bold text-slate-500 uppercase">Robotics Master Track</span>
+                  <span className="text-2xl font-black text-black">60%</span>
+                </div>
+                <Progress value={60} className="h-4 border-2 border-black bg-slate-100 [&>div]:bg-[#43a047]" />
+              </CardContent>
+            </Card>
+
+            {/* Up Next Card */}
+            <Card className="border-4 border-black rounded-xl neo-shadow overflow-hidden bg-white">
+              <CardHeader className="pb-2 bg-[#dc0a2d] border-b-4 border-black text-white">
+                <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                  <PlayCircle size={20} />
+                  Up Next
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="text-[10px] font-black text-white uppercase tracking-widest mb-3 bg-black inline-block px-2 py-1 rounded-md">
+                  Intro to Arduino
+                </div>
+                <h3 className="text-base font-black uppercase text-black leading-tight mb-2">
+                  Lesson 4: Reading Sensor Data
+                </h3>
+                <p className="text-xs font-medium text-slate-500 mb-6">
+                  Learn how to read analog inputs from ultrasonic and infrared sensors.
+                </p>
+                <Link href="/dashboard/courses/arduino-101" className="w-full flex items-center justify-between px-5 py-3 bg-black rounded-lg text-white text-xs uppercase font-black border-2 border-black hover:bg-[#dc0a2d] transition-colors neo-shadow-sm hover:shadow-[4px_4px_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+                  <span>Watch Video</span>
+                  <ChevronRight strokeWidth={3} size={16} />
+                </Link>
+              </CardContent>
+            </Card>
+
+          </motion.div>
+
+          {/* Column 2: Announcements */}
+          <motion.div variants={itemVariants} className="space-y-4">
             <div className="flex items-center gap-2 mb-2 bg-white border-4 border-black rounded-xl px-4 py-3 neo-shadow w-fit">
               <div className="bg-[#ffcb05] p-2 rounded-lg border-2 border-black">
-                <Megaphone size={20} weight="fill" className="text-black" />
+                <Megaphone size={20} strokeWidth={2.5} className="text-black" />
               </div>
               <h2 className="text-base font-black text-black uppercase tracking-wide">Academy News</h2>
             </div>
             
-            <div className="space-y-4">
-              {announcements.map((announcement) => (
-                <div key={announcement.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow relative overflow-hidden group hover:-translate-y-1 transition-transform">
-                  {announcement.isImportant && (
-                    <div className="absolute top-0 right-0 px-3 py-1 bg-[#dc0a2d] border-b-4 border-l-4 border-black rounded-bl-xl font-black text-white text-[10px] uppercase tracking-wider">
-                      Important
-                    </div>
-                  )}
-                  <div className="flex justify-between items-start gap-4 mb-3">
-                    <h3 className="text-sm font-black leading-tight uppercase text-black max-w-[80%]">{announcement.title}</h3>
+            {announcements.map((announcement) => (
+              <div key={announcement.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                {announcement.isImportant && (
+                  <div className="absolute top-0 right-0 px-3 py-1 bg-[#dc0a2d] border-b-4 border-l-4 border-black rounded-bl-xl font-black text-white text-[10px] uppercase tracking-wider">
+                    Important
                   </div>
-                  <p className="text-xs text-slate-600 font-medium leading-relaxed mb-4">{announcement.content}</p>
-                  <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 border-2 border-black rounded-md inline-block uppercase tracking-wider">{announcement.date}</span>
+                )}
+                <div className="flex justify-between items-start gap-4 mb-3">
+                  <h3 className="text-sm font-black leading-tight uppercase text-black max-w-[80%]">{announcement.title}</h3>
                 </div>
-              ))}
-            </div>
-          </motion.section>
+                <p className="text-xs text-slate-600 font-medium leading-relaxed mb-4">{announcement.content}</p>
+                <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 border-2 border-black rounded-md inline-block uppercase tracking-wider">{announcement.date}</span>
+              </div>
+            ))}
+          </motion.div>
 
-          {/* Right Column: Pending Assignments */}
-          <motion.section variants={itemVariants} className="flex flex-col gap-4">
+          {/* Column 3: Pending Assignments */}
+          <motion.div variants={itemVariants} className="space-y-4">
             <div className="flex items-center gap-2 mb-2 bg-white border-4 border-black rounded-xl px-4 py-3 neo-shadow w-fit">
               <div className="bg-[#43a047] p-2 rounded-lg border-2 border-black">
-                <Wrench size={20} weight="fill" className="text-white" />
+                <Wrench size={20} strokeWidth={2.5} className="text-white" />
               </div>
               <h2 className="text-base font-black text-black uppercase tracking-wide">Active Assignments</h2>
             </div>
 
-            <div className="space-y-4">
-              {pendingAssignments.length > 0 ? (
-                pendingAssignments.map((assignment) => (
-                  <div key={assignment.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow hover:-translate-y-1 transition-transform">
-                    <div className="mb-4">
-                      <div className="text-[10px] font-black text-[#dc0a2d] uppercase tracking-widest mb-2 bg-red-50 inline-block px-2 py-1 border-2 border-[#dc0a2d] rounded-md">
-                        {assignment.course}
-                      </div>
-                      <h3 className="text-base font-black uppercase text-black leading-tight mt-1">{assignment.title}</h3>
+            {pendingAssignments.length > 0 ? (
+              pendingAssignments.map((assignment) => (
+                <div key={assignment.id} className="bg-white border-4 border-black rounded-xl p-5 neo-shadow hover:-translate-y-1 transition-transform">
+                  <div className="mb-4">
+                    <div className="text-[10px] font-black text-[#dc0a2d] uppercase tracking-widest mb-2 bg-red-50 inline-block px-2 py-1 border-2 border-[#dc0a2d] rounded-md">
+                      {assignment.course}
                     </div>
-                    
-                    <div className="flex items-center gap-4 text-xs font-bold mb-5">
-                      <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 border-2 border-amber-600 rounded-md px-3 py-1.5">
-                        <Clock size={14} weight="bold" />
-                        <span className="uppercase">Due: {assignment.dueDate}</span>
-                      </div>
+                    <h3 className="text-base font-black uppercase text-black leading-tight mt-1">{assignment.title}</h3>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 text-xs font-bold mb-5">
+                    <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 border-2 border-amber-600 rounded-md px-3 py-1.5">
+                      <Clock size={14} strokeWidth={2.5} />
+                      <span className="uppercase">Due: {assignment.dueDate}</span>
                     </div>
+                  </div>
 
-                    <Link href="#" className="w-full flex items-center justify-between px-5 py-4 bg-black rounded-lg text-white text-xs uppercase font-black border-2 border-black hover:bg-[#dc0a2d] hover:text-white transition-colors neo-shadow-sm hover:shadow-[4px_4px_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
-                      <span>Begin Assignment</span>
-                      <CaretRight weight="bold" size={16} />
-                    </Link>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-white border-4 border-dashed border-slate-300 rounded-xl p-10 flex flex-col items-center justify-center text-center">
-                  <div className="w-16 h-16 bg-green-100 border-4 border-green-500 rounded-full flex items-center justify-center mb-4">
-                    <CheckSquareOffset size={24} weight="bold" className="text-green-600" />
-                  </div>
-                  <h3 className="text-base font-black text-black uppercase mb-2">All Caught Up!</h3>
-                  <p className="text-xs text-slate-500 font-medium max-w-[200px]">
-                    You have no pending assignments. Review your past modules or explore the lab.
-                  </p>
+                  <Link href="/dashboard/assignments" className="w-full flex items-center justify-between px-5 py-3 bg-black rounded-lg text-white text-xs uppercase font-black border-2 border-black hover:bg-[#43a047] hover:text-white transition-colors neo-shadow-sm hover:shadow-[4px_4px_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+                    <span>Submit Work</span>
+                    <ChevronRight strokeWidth={3} size={16} />
+                  </Link>
                 </div>
-              )}
-            </div>
-          </motion.section>
+              ))
+            ) : (
+              <div className="bg-white border-4 border-dashed border-slate-300 rounded-xl p-10 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 bg-green-100 border-4 border-green-500 rounded-full flex items-center justify-center mb-4">
+                  <CheckSquare size={24} strokeWidth={2.5} className="text-green-600" />
+                </div>
+                <h3 className="text-base font-black text-black uppercase mb-2">All Caught Up!</h3>
+                <p className="text-xs text-slate-500 font-medium max-w-[200px]">
+                  You have no pending assignments. Review your past modules or explore the lab.
+                </p>
+              </div>
+            )}
+          </motion.div>
 
         </div>
       </motion.div>
     </div>
   );
 }
-
-

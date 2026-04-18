@@ -112,13 +112,13 @@ export default function LoginPage() {
 
             <motion.div variants={containerVariants} className="space-y-6">
               <motion.div variants={itemVariants}>
-                <Button variant="outline" className="w-full h-12 bg-white border-2 border-black rounded-lg hover:bg-slate-50 transition-all text-black neo-shadow-sm active:translate-y-1 active:translate-x-1 active:shadow-none text-sm font-black uppercase tracking-wider relative overflow-hidden group">
+                <Link href="/dashboard" className="w-full h-12 bg-white border-2 border-black rounded-lg hover:bg-slate-50 transition-all text-black neo-shadow-sm active:translate-y-1 active:translate-x-1 active:shadow-none text-sm font-black uppercase tracking-wider relative overflow-hidden group flex items-center justify-center">
                   <span className="absolute inset-0 w-full h-full bg-slate-100 translate-y-full group-hover:translate-y-0 transition-transform duration-200"></span>
                   <div className="relative flex items-center justify-center w-full">
                     <GoogleLogo weight="bold" className="absolute left-4 w-5 h-5 text-black" />
                     <span>Sign in with Google</span>
                   </div>
-                </Button>
+                </Link>
               </motion.div>
 
               <motion.div variants={itemVariants} className="relative py-4">
@@ -131,7 +131,7 @@ export default function LoginPage() {
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <form action="#" method="POST" className="space-y-5">
+                <div className="space-y-5">
                   <div>
                     <Label htmlFor="email" className="block text-xs uppercase font-black text-black mb-2">
                       Email Address
@@ -193,11 +193,11 @@ export default function LoginPage() {
                   </div>
 
                   <div className="pt-4">
-                    <Button type="submit" className="w-full h-14 bg-[#ffcb05] hover:bg-[#d4a017] text-black font-black text-sm tracking-widest uppercase border-2 border-black rounded-lg neo-shadow-sm transition-all hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:-translate-y-1 active:translate-y-1 active:translate-x-1 active:shadow-none">
+                    <Link href="/dashboard" className="w-full flex justify-center items-center h-14 bg-[#ffcb05] hover:bg-[#d4a017] text-black font-black text-sm tracking-widest uppercase border-2 border-black rounded-lg neo-shadow-sm transition-all hover:shadow-[6px_6px_0_rgba(0,0,0,1)] hover:-translate-y-1 active:translate-y-1 active:translate-x-1 active:shadow-none">
                       Login to Portal
-                    </Button>
+                    </Link>
                   </div>
-                </form>
+                </div>
               </motion.div>
             </motion.div>
           </motion.div>
