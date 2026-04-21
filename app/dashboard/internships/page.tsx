@@ -28,7 +28,7 @@ export default function InternshipsPage() {
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <Briefcase size={36} className="text-rose-600" strokeWidth={2.5} />
+          <Briefcase size={36} className="text-red-500" strokeWidth={2.5} />
           Internships
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -36,8 +36,8 @@ export default function InternshipsPage() {
         </p>
       </header>
 
-      <div className="bg-red-50 border-4 border-rose-200 rounded-xl p-4 mb-8 flex items-start gap-4">
-        <Lock className="text-rose-600 shrink-0 mt-0.5" size={24} />
+      <div className="bg-red-50 border-4 border-red-200 rounded-xl p-4 mb-8 flex items-start gap-4">
+        <Lock className="text-red-500 shrink-0 mt-0.5" size={24} />
         <div>
           <h3 className="font-black text-slate-800 uppercase text-sm mb-1">Strict Access Control</h3>
           <p className="text-sm font-medium text-slate-700">
@@ -85,7 +85,7 @@ export default function InternshipsPage() {
                  rel="noopener noreferrer"
                  className={`w-full flex items-center justify-center gap-2 px-5 py-4 border border-slate-200 rounded-lg font-black uppercase text-sm transition-all shadow-sm hover:shadow-md ${
                    internship.status === "ACTIVE" 
-                    ? "bg-gradient-to-br from-amber-400 to-orange-500 text-slate-800 hover:bg-[#d4a017] hover:shadow-lg hover:-translate-y-1 active:translate-y-1 " 
+                    ? "bg-gradient-to-br from-orange-300 to-amber-400 text-slate-800 hover:bg-[#d4a017] hover:shadow-lg hover:-translate-y-1 active:translate-y-1 " 
                     : "bg-slate-100 text-slate-400 cursor-not-allowed border-slate-300"
                  }`}
                >

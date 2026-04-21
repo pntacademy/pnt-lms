@@ -8,7 +8,7 @@ export default function CalendarPage() {
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <CalendarIcon size={36} className="text-rose-600" strokeWidth={2.5} />
+          <CalendarIcon size={36} className="text-red-500" strokeWidth={2.5} />
           Academy Calendar
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -16,7 +16,7 @@ export default function CalendarPage() {
         </p>
       </header>
 
-      <div className="bg-yellow-50 border-4 border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-4">
+      <div className="bg-yellow-50 border-4 border-orange-200 rounded-xl p-4 mb-8 flex items-start gap-4">
         <Info className="text-[#d4a017] shrink-0 mt-0.5" size={24} />
         <div>
           <h3 className="font-black text-slate-800 uppercase text-sm mb-1">Google Calendar Integration</h3>

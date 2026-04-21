@@ -24,12 +24,12 @@ const itemVariants = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] text-slate-800 selection:bg-gradient-to-br from-amber-400 to-orange-500 selection:text-slate-800 p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] text-slate-800 selection:bg-gradient-to-br from-red-400 to-rose-500 selection:text-slate-800 p-4 relative overflow-hidden font-sans">
       
       {/* Animated Colorful Background */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-rose-500 to-red-600 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob"></div>
-      <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-amber-400 to-orange-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-[#43a047] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-red-400 to-rose-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob"></div>
+      <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-red-400 to-rose-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-gradient-to-br from-orange-300 to-amber-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-4000"></div>
 
       <style jsx global>{`
         @keyframes blob {
@@ -59,7 +59,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row gap-0 shadow-xl shadow-slate-200/50 bg-white border border-slate-200 rounded-2xl overflow-hidden">
         
         {/* Left Side: Branding / Graphic */}
-        <div className="hidden md:flex md:w-5/12 bg-gradient-to-br from-rose-500 to-red-600 border-r border-slate-200 p-10 flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex md:w-5/12 bg-gradient-to-br from-red-400 to-rose-500 border-r border-slate-200 p-10 flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
           
           <div className="relative z-10">
@@ -81,7 +81,7 @@ export default function LoginPage() {
           <div className="relative z-10 mt-12 flex items-center justify-center">
             <div className="w-32 h-32 bg-white border border-slate-200 rounded-full flex justify-center items-center shadow-sm hover:shadow-md relative">
               <div className="absolute inset-0 bg-yellow-100 rounded-full animate-ping opacity-20"></div>
-              <Student size={48} weight="fill" className="text-rose-600 relative z-10" />
+              <Student size={48} weight="fill" className="text-red-500 relative z-10" />
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function LoginPage() {
                         id="remember-me"
                         name="remember-me"
                         type="checkbox"
-                        className="h-4 w-4 text-rose-600 bg-white border-2 border-slate-300 rounded focus:ring-[#dc0a2d]"
+                        className="h-4 w-4 text-red-500 bg-white border-2 border-slate-300 rounded focus:ring-[#dc0a2d]"
                       />
                       <label htmlFor="remember-me" className="ml-2 block text-slate-800 font-bold">
                         Remember me
@@ -186,14 +186,14 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                      <a href="#" className="font-bold text-rose-600 hover:underline underline-offset-2">
+                      <a href="#" className="font-bold text-red-500 hover:underline underline-offset-2">
                         Forgot Password?
                       </a>
                     </div>
                   </div>
 
                   <div className="pt-4">
-                    <Link href="/dashboard" className="w-full flex justify-center items-center h-14 bg-gradient-to-br from-amber-400 to-orange-500 hover:bg-[#d4a017] text-slate-800 font-black text-sm tracking-widest uppercase border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all hover:shadow-xl hover:-translate-y-1 active:translate-y-1 active:translate-x-1 ">
+                    <Link href="/dashboard" className="w-full flex justify-center items-center h-14 bg-gradient-to-br from-red-400 to-rose-500 hover:bg-[#d4a017] text-slate-800 font-black text-sm tracking-widest uppercase border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all hover:shadow-xl hover:-translate-y-1 active:translate-y-1 active:translate-x-1 ">
                       Login to Portal
                     </Link>
                   </div>

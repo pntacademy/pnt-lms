@@ -24,7 +24,7 @@ export function MobileBottomNav() {
             href={link.href}
             className={`flex flex-col items-center justify-center w-16 h-14 rounded-xl border-2 transition-all ${
               isActive
-                ? "bg-gradient-to-br from-amber-400 to-orange-500 border-slate-200 shadow-sm hover:shadow-md -translate-y-1"
+                ? "bg-gradient-to-br from-orange-300 to-amber-400 border-slate-200 shadow-sm hover:shadow-md -translate-y-1"
                 : "bg-transparent border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >

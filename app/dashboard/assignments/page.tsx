@@ -48,7 +48,7 @@ export default function AssignmentsPage() {
 
       {/* Upload Form UI (Visual Only) */}
       <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 bg-white">
-        <CardHeader className="bg-gradient-to-br from-amber-400 to-orange-500 border-b border-slate-200 p-4">
+        <CardHeader className="bg-gradient-to-br from-orange-300 to-amber-400 border-b border-slate-200 p-4">
           <CardTitle className="text-sm font-black uppercase text-slate-800 flex items-center gap-2">
             <UploadCloud size={20} strokeWidth={2.5} />
             Submit New Assignment
@@ -131,7 +131,7 @@ export default function AssignmentsPage() {
                      {assignment.status === "completed" ? (
                        <span className="font-black text-lg text-slate-800">{assignment.score}</span>
                      ) : (
-                       <button className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-rose-500 to-red-600 transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-1 ">
+                       <button className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-red-400 to-rose-500 transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-1 ">
                          Submit Now
                        </button>
                      )}
@@ -155,7 +155,7 @@ export default function AssignmentsPage() {
                 {assignment.status === "completed" ? (
                   <CheckCircle2 size={24} className="text-[#43a047]" strokeWidth={2.5} />
                 ) : (
-                  <Clock size={24} className="text-amber-500" strokeWidth={2.5} />
+                  <Clock size={24} className="text-orange-400" strokeWidth={2.5} />
                 )}
               </div>
               
@@ -171,7 +171,7 @@ export default function AssignmentsPage() {
                 ) : (
                   <>
                     <span className="text-xs font-bold text-amber-600 uppercase">Due: {assignment.dueDate}</span>
-                    <button className="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-rose-500 to-red-600 transition-colors">
+                    <button className="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-red-400 to-rose-500 transition-colors">
                       Submit
                     </button>
                   </>

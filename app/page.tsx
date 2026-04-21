@@ -22,11 +22,11 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-amber-400 to-orange-500 selection:text-slate-800 overflow-hidden relative font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800 overflow-hidden relative font-sans">
       
       {/* Animated Colorful Background */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-rose-500 to-red-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-amber-400 to-orange-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-red-400 to-rose-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-orange-300 to-amber-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
       <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-[#43a047] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
 
       <style jsx global>{`
@@ -59,15 +59,15 @@ export default function LandingPage() {
       {/* Main Header / Nav */}
       <nav className="relative z-20 border-b border-slate-200 bg-white px-6 py-4 flex justify-between items-center shadow-sm hover:shadow-md">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gradient-to-br from-rose-500 to-red-600 border border-slate-200 rounded-md flex items-center justify-center shadow-sm hover:shadow-md">
+          <div className="w-6 h-6 bg-gradient-to-br from-red-400 to-rose-500 border border-slate-200 rounded-md flex items-center justify-center shadow-sm hover:shadow-md">
             <GraduationCap size={16} weight="fill" className="text-white" />
           </div>
           <span className="font-black text-xl uppercase tracking-wider text-slate-800">PNT Academy</span>
         </div>
         <div className="hidden md:flex items-center gap-6 font-bold uppercase text-sm tracking-wider">
-          <Link href="#programs" className="hover:text-rose-600 hover:underline underline-offset-4">Programs</Link>
-          <Link href="#about" className="hover:text-rose-600 hover:underline underline-offset-4">About</Link>
-          <Link href="/login" className="bg-gradient-to-br from-amber-400 to-orange-500 px-5 py-2.5 border border-slate-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+          <Link href="#programs" className="hover:text-red-500 hover:underline underline-offset-4">Programs</Link>
+          <Link href="#about" className="hover:text-red-500 hover:underline underline-offset-4">About</Link>
+          <Link href="/login" className="bg-gradient-to-br from-orange-300 to-amber-400 px-5 py-2.5 border border-slate-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
             Student Login
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function LandingPage() {
             animate="visible"
             className="flex flex-col space-y-6"
           >
-            <motion.div variants={itemVariants} className="inline-block bg-gradient-to-br from-rose-500 to-red-600 text-white px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest w-fit shadow-sm hover:shadow-md border border-slate-200">
+            <motion.div variants={itemVariants} className="inline-block bg-gradient-to-br from-red-400 to-rose-500 text-white px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest w-fit shadow-sm hover:shadow-md border border-slate-200">
               Next-Gen Learning
             </motion.div>
             <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[1.1] text-slate-800 drop-shadow-[2px_2px_0_rgba(0,0,0,0.1)]">
@@ -127,7 +127,7 @@ export default function LandingPage() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="relative z-10 bg-white border border-slate-200 p-6 rounded-2xl shadow-xl shadow-slate-200/50 flex flex-col items-center gap-4"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full border border-slate-200 flex items-center justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full border border-slate-200 flex items-center justify-center">
                   <Robot size={32} className="text-slate-800" weight="fill" />
                 </div>
                 <div className="bg-black text-white px-3 py-1.5 rounded-md text-[10px] uppercase font-black tracking-widest">
@@ -146,7 +146,7 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-slate-800">
               Core Modules
             </h2>
-            <div className="w-1/2 h-2 bg-gradient-to-br from-amber-400 to-orange-500 border border-slate-200 shadow-sm hover:shadow-md hidden md:block"></div>
+            <div className="w-1/2 h-2 bg-gradient-to-br from-orange-300 to-amber-400 border border-slate-200 shadow-sm hover:shadow-md hidden md:block"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -161,7 +161,7 @@ export default function LandingPage() {
                 icon: <Cpu weight="fill" className="w-8 h-8 text-slate-800" />,
                 title: "Hardware Integration",
                 desc: "Work with microcontrollers, sensors, and actuators to build responsive systems.",
-                color: "bg-gradient-to-br from-amber-400 to-orange-500",
+                color: "bg-gradient-to-br from-orange-300 to-amber-400",
               },
               {
                 icon: <Robot weight="fill" className="w-8 h-8 text-slate-800" />,

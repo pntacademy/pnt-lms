@@ -26,7 +26,7 @@ export function DesktopSidebar() {
         href={href}
         className={`flex items-center gap-4 px-4 py-3 rounded-xl border-2 transition-all group ${
           isActive
-            ? "bg-gradient-to-br from-amber-400 to-orange-500 border-slate-200 shadow-xl shadow-slate-200/50 text-slate-800"
+            ? "bg-gradient-to-br from-orange-300 to-amber-400 border-slate-200 shadow-xl shadow-slate-200/50 text-slate-800"
             : "bg-transparent border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:shadow-sm hover:shadow-md hover:-translate-y-0.5"
         }`}
       >
@@ -42,7 +42,7 @@ export function DesktopSidebar() {
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 left-0 p-6 z-40">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-3 mb-12 group">
-        <div className="bg-gradient-to-br from-rose-500 to-red-600 p-2 rounded-lg border border-slate-200 group-hover:-translate-y-1 transition-transform group-hover:shadow-sm hover:shadow-md">
+        <div className="bg-gradient-to-br from-red-400 to-rose-500 p-2 rounded-lg border border-slate-200 group-hover:-translate-y-1 transition-transform group-hover:shadow-sm hover:shadow-md">
           <GraduationCap size={28} className="text-white" strokeWidth={2.5} />
         </div>
         <div>

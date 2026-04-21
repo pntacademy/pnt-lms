@@ -18,7 +18,7 @@ export default function CourseLearningView({ params }: { params: { courseId: str
       
       {/* Navigation */}
       <Link href="/dashboard/courses" className="inline-flex items-center gap-2 text-xs font-black uppercase text-slate-500 hover:text-slate-800 transition-colors group">
-        <div className="bg-slate-200 p-1.5 rounded-md border-2 border-transparent group-hover:border-slate-200 group-hover:bg-gradient-to-br from-amber-400 to-orange-500 transition-all">
+        <div className="bg-slate-200 p-1.5 rounded-md border-2 border-transparent group-hover:border-slate-200 group-hover:bg-gradient-to-br from-orange-300 to-amber-400 transition-all">
           <ChevronLeft size={16} strokeWidth={3} className="text-slate-700 group-hover:text-slate-800" />
         </div>
         Back to Courses
@@ -27,7 +27,7 @@ export default function CourseLearningView({ params }: { params: { courseId: str
       {/* Top Section: Video Player */}
       <div className="w-full aspect-video bg-black rounded-xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1610651817366-0eb03264eb78?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity"></div>
-        <div className="bg-gradient-to-br from-rose-500 to-red-600 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border border-slate-200 z-10 group-hover:scale-110 transition-transform shadow-sm hover:shadow-md">
+        <div className="bg-gradient-to-br from-red-400 to-rose-500 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border border-slate-200 z-10 group-hover:scale-110 transition-transform shadow-sm hover:shadow-md">
             <PlayCircle size={32} strokeWidth={2.5} className="text-white ml-1" />
         </div>
         <span className="text-white font-black uppercase tracking-widest mt-4 z-10 bg-black px-3 py-1 border-2 border-slate-700 rounded-md text-xs">
@@ -41,11 +41,11 @@ export default function CourseLearningView({ params }: { params: { courseId: str
           {lectureData.title}
         </h1>
         <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">
-          <Calendar size={14} strokeWidth={2.5} className="text-rose-600" />
+          <Calendar size={14} strokeWidth={2.5} className="text-red-500" />
           {lectureData.date}
         </div>
         <div className="flex gap-3 items-start bg-slate-50 border-2 border-slate-200 p-4 rounded-lg">
-          <Info size={20} strokeWidth={2.5} className="text-amber-500 shrink-0 mt-0.5" />
+          <Info size={20} strokeWidth={2.5} className="text-orange-400 shrink-0 mt-0.5" />
           <p className="text-sm font-medium text-slate-700 leading-relaxed">
             {lectureData.description}
           </p>
@@ -58,7 +58,7 @@ export default function CourseLearningView({ params }: { params: { courseId: str
           <TabsTrigger value="resources" className="text-xs md:text-sm font-black uppercase tracking-wider data-[state=active]:bg-[#43a047] data-[state=active]:border-2 data-[state=active]:border-slate-200 data-[state=active]:text-white rounded-lg py-3">
             Resources
           </TabsTrigger>
-          <TabsTrigger value="assignments" className="text-xs md:text-sm font-black uppercase tracking-wider data-[state=active]:bg-gradient-to-br from-rose-500 to-red-600 data-[state=active]:border-2 data-[state=active]:border-slate-200 data-[state=active]:text-white rounded-lg py-3">
+          <TabsTrigger value="assignments" className="text-xs md:text-sm font-black uppercase tracking-wider data-[state=active]:bg-gradient-to-br from-red-400 to-rose-500 data-[state=active]:border-2 data-[state=active]:border-slate-200 data-[state=active]:text-white rounded-lg py-3">
             Assignments
           </TabsTrigger>
         </TabsList>
@@ -68,7 +68,7 @@ export default function CourseLearningView({ params }: { params: { courseId: str
             <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 bg-white">
             <CardContent className="pt-6 space-y-4">
                 {[
-                { title: "arduino_code_v2.ino", type: "Source Code", icon: FileText, color: "bg-gradient-to-br from-amber-400 to-orange-500" },
+                { title: "arduino_code_v2.ino", type: "Source Code", icon: FileText, color: "bg-gradient-to-br from-orange-300 to-amber-400" },
                 { title: "circuit_diagram.pdf", type: "PDF Document", icon: Download, color: "bg-[#43a047]" }
                 ].map((resource, i) => (
                 <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer group gap-4">
@@ -95,8 +95,8 @@ export default function CourseLearningView({ params }: { params: { courseId: str
             <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 bg-white">
             <CardContent className="pt-6">
                 
-                <div className="mb-6 p-4 border-2 border-rose-200 bg-red-50 rounded-lg">
-                    <h3 className="text-sm font-black uppercase text-rose-600 mb-2">Homework Instructions</h3>
+                <div className="mb-6 p-4 border-2 border-red-200 bg-red-50 rounded-lg">
+                    <h3 className="text-sm font-black uppercase text-red-500 mb-2">Homework Instructions</h3>
                     <p className="text-sm font-medium text-slate-700">
                         Please wire the dual IR sensors according to the circuit_diagram.pdf, implement the logic in the arduino_code_v2.ino, and upload your final .ino file below.
                     </p>

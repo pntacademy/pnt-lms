@@ -21,7 +21,7 @@ export default function AttendancePage() {
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <ClipboardCheck size={36} className="text-rose-600" strokeWidth={2.5} />
+          <ClipboardCheck size={36} className="text-red-500" strokeWidth={2.5} />
           Attendance
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -32,7 +32,7 @@ export default function AttendancePage() {
       {/* Progress Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <Card className="col-span-1 lg:col-span-2 border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
-          <CardHeader className="border-b border-slate-200 bg-gradient-to-br from-amber-400 to-orange-500">
+          <CardHeader className="border-b border-slate-200 bg-gradient-to-br from-orange-300 to-amber-400">
             <CardTitle className="text-xl font-black uppercase text-slate-800">Overall Attendance Rate</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -54,7 +54,7 @@ export default function AttendancePage() {
             </div>
             {/* Teacher View Placeholder Button */}
             <div className="w-full">
-              <button className="w-full px-4 py-3 bg-gradient-to-br from-rose-500 to-red-600 text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1  transition-all">
+              <button className="w-full px-4 py-3 bg-gradient-to-br from-red-400 to-rose-500 text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1  transition-all">
                 Join Zoom (Student)
               </button>
             </div>

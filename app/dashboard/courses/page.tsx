@@ -11,7 +11,7 @@ const courses = [
     title: "Robotics Masterclass (30 Projects)",
     instructor: "Admin",
     level: "Advanced",
-    imageColor: "bg-gradient-to-br from-rose-500 to-red-600",
+    imageColor: "bg-gradient-to-br from-red-400 to-rose-500",
     progress: 45,
   },
   {
@@ -19,7 +19,7 @@ const courses = [
     title: "Robotics Essentials (15 Projects)",
     instructor: "Admin",
     level: "Beginner",
-    imageColor: "bg-gradient-to-br from-amber-400 to-orange-500",
+    imageColor: "bg-gradient-to-br from-orange-300 to-amber-400",
     progress: 0,
   },
 ];
@@ -30,7 +30,7 @@ export default function CoursesPage() {
       <header className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-            <BookOpen size={36} className="text-rose-600" strokeWidth={2.5} />
+            <BookOpen size={36} className="text-red-500" strokeWidth={2.5} />
             Course Catalog
           </h1>
           <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -72,7 +72,7 @@ export default function CoursesPage() {
               <div className="pt-4 flex justify-between items-center w-full">
                  <span className="text-xs font-black uppercase text-slate-500">{course.progress > 0 ? `${course.progress}% Complete` : 'Not Started'}</span>
               </div>
-              <Link href={`/dashboard/courses/${course.id}`} className="w-full flex items-center justify-between px-5 py-3 bg-black rounded-lg text-white text-xs uppercase font-black border border-slate-200 hover:bg-gradient-to-br from-amber-400 to-orange-500 hover:text-slate-800 transition-colors shadow-sm hover:shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-1 ">
+              <Link href={`/dashboard/courses/${course.id}`} className="w-full flex items-center justify-between px-5 py-3 bg-black rounded-lg text-white text-xs uppercase font-black border border-slate-200 hover:bg-gradient-to-br from-orange-300 to-amber-400 hover:text-slate-800 transition-colors shadow-sm hover:shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-1 ">
                 <span>{course.progress > 0 ? "Continue Course" : "Start Course"}</span>
                 <ChevronRight strokeWidth={3} size={16} />
               </Link>
