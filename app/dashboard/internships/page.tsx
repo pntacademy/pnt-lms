@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, LockKey, ExternalLink } from "lucide-react";
+import { Briefcase, Lock, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -37,7 +37,7 @@ export default function InternshipsPage() {
       </header>
 
       <div className="bg-red-50 border-4 border-[#dc0a2d] rounded-xl p-4 mb-8 flex items-start gap-4">
-        <LockKey className="text-[#dc0a2d] shrink-0 mt-0.5" size={24} />
+        <Lock className="text-[#dc0a2d] shrink-0 mt-0.5" size={24} />
         <div>
           <h3 className="font-black text-black uppercase text-sm mb-1">Strict Access Control</h3>
           <p className="text-sm font-medium text-slate-700">
@@ -64,7 +64,7 @@ export default function InternshipsPage() {
                 </Badge>
               ) : (
                 <Badge className="bg-slate-200 text-slate-500 border-2 border-slate-400 font-black neo-shadow-sm hover:bg-slate-200 uppercase ml-2 shrink-0">
-                  <LockKey size={12} className="mr-1 inline" /> Locked
+                  <Lock size={12} className="mr-1 inline" /> Locked
                 </Badge>
               )}
             </CardHeader>
@@ -95,7 +95,7 @@ export default function InternshipsPage() {
                    </>
                  ) : (
                    <>
-                     Requires Approval <LockKey size={18} strokeWidth={2.5} />
+                     Requires Approval <Lock size={18} strokeWidth={2.5} />
                    </>
                  )}
                </a>
