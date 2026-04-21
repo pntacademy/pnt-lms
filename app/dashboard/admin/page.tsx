@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { bulkCreateStudents } from "@/app/actions/students";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 export default function AdminPage() {
   const [students, setStudents] = useState([
@@ -74,7 +74,7 @@ export default function AdminPage() {
       cred.rawPassword
     ]);
 
-    (doc as any).autoTable({
+    autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
       startY: 40,
