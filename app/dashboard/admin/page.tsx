@@ -47,7 +47,7 @@ export default function AdminPage() {
 
     const result = await bulkCreateStudents(validStudents);
     if (result.success) {
-      setGeneratedCredentials(result.data);
+      setGeneratedCredentials(result.data || []);
       // Reset form
       setStudents([{ name: "", className: "", instituteName: "", age: "", contactNumber: "" }]);
     } else {
