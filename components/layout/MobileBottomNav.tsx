@@ -14,7 +14,7 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-4 border-black z-50 px-4 py-2 flex justify-between items-center">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 px-4 py-2 flex justify-between items-center">
       {links.map((link) => {
         const isActive = pathname === link.href;
         const Icon = link.icon;
@@ -24,12 +24,12 @@ export function MobileBottomNav() {
             href={link.href}
             className={`flex flex-col items-center justify-center w-16 h-14 rounded-xl border-2 transition-all ${
               isActive
-                ? "bg-[#ffcb05] border-black neo-shadow-sm -translate-y-1"
-                : "bg-transparent border-transparent text-slate-500 hover:text-black"
+                ? "bg-gradient-to-br from-amber-400 to-orange-500 border-slate-200 shadow-sm hover:shadow-md -translate-y-1"
+                : "bg-transparent border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            <Icon size={24} strokeWidth={isActive ? 3 : 2} className={isActive ? "text-black" : ""} />
-            <span className={`text-[10px] mt-1 uppercase font-black tracking-wider ${isActive ? "text-black" : ""}`}>
+            <Icon size={24} strokeWidth={isActive ? 3 : 2} className={isActive ? "text-slate-800" : ""} />
+            <span className={`text-[10px] mt-1 uppercase font-black tracking-wider ${isActive ? "text-slate-800" : ""}`}>
               {link.label}
             </span>
           </Link>

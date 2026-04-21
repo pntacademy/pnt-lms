@@ -37,7 +37,7 @@ export default function AssignmentsPage() {
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-6xl mx-auto space-y-8">
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black uppercase text-black tracking-tight flex items-center gap-3">
+        <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
           <FileText size={36} className="text-[#43a047]" strokeWidth={2.5} />
           Assignments
         </h1>
@@ -47,9 +47,9 @@ export default function AssignmentsPage() {
       </header>
 
       {/* Upload Form UI (Visual Only) */}
-      <Card className="border-4 border-black rounded-xl neo-shadow bg-white">
-        <CardHeader className="bg-[#ffcb05] border-b-4 border-black p-4">
-          <CardTitle className="text-sm font-black uppercase text-black flex items-center gap-2">
+      <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 bg-white">
+        <CardHeader className="bg-gradient-to-br from-amber-400 to-orange-500 border-b border-slate-200 p-4">
+          <CardTitle className="text-sm font-black uppercase text-slate-800 flex items-center gap-2">
             <UploadCloud size={20} strokeWidth={2.5} />
             Submit New Assignment
           </CardTitle>
@@ -58,21 +58,21 @@ export default function AssignmentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-black">Select Course</label>
-                <div className="w-full border-2 border-black rounded-lg p-3 bg-slate-50 text-sm font-bold text-slate-500 cursor-not-allowed">
+                <label className="text-xs font-black uppercase text-slate-800">Select Course</label>
+                <div className="w-full border border-slate-200 rounded-lg p-3 bg-slate-50 text-sm font-bold text-slate-500 cursor-not-allowed">
                   Select a course...
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-black">Select Assignment</label>
-                <div className="w-full border-2 border-black rounded-lg p-3 bg-slate-50 text-sm font-bold text-slate-500 cursor-not-allowed">
+                <label className="text-xs font-black uppercase text-slate-800">Select Assignment</label>
+                <div className="w-full border border-slate-200 rounded-lg p-3 bg-slate-50 text-sm font-bold text-slate-500 cursor-not-allowed">
                   Select an assignment...
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-black">Comments (Optional)</label>
+                <label className="text-xs font-black uppercase text-slate-800">Comments (Optional)</label>
                 <textarea 
-                  className="w-full border-2 border-black rounded-lg p-3 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ffcb05]" 
+                  className="w-full border border-slate-200 rounded-lg p-3 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ffcb05]" 
                   rows={3}
                   placeholder="Add any notes for the instructor..."
                 ></textarea>
@@ -80,13 +80,13 @@ export default function AssignmentsPage() {
             </div>
             
             {/* File Drop Zone */}
-            <div className="border-4 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 bg-slate-50 hover:bg-slate-100 hover:border-black transition-colors cursor-pointer group">
-              <div className="bg-white p-4 rounded-full border-2 border-slate-300 group-hover:border-black group-hover:neo-shadow-sm transition-all mb-4">
-                <FileUp size={32} className="text-slate-400 group-hover:text-black" strokeWidth={2} />
+            <div className="border-4 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 bg-slate-50 hover:bg-slate-100 hover:border-slate-200 transition-colors cursor-pointer group">
+              <div className="bg-white p-4 rounded-full border-2 border-slate-300 group-hover:border-slate-200 group-hover:shadow-sm hover:shadow-md transition-all mb-4">
+                <FileUp size={32} className="text-slate-400 group-hover:text-slate-800" strokeWidth={2} />
               </div>
-              <p className="text-sm font-black uppercase text-black mb-1">Click to upload or drag & drop</p>
+              <p className="text-sm font-black uppercase text-slate-800 mb-1">Click to upload or drag & drop</p>
               <p className="text-xs font-bold text-slate-500 uppercase">PDF, CPP, INO (Max 10MB)</p>
-              <div className="mt-6 px-6 py-2 bg-black text-white text-xs font-black uppercase rounded-lg border-2 border-black neo-shadow-sm">
+              <div className="mt-6 px-6 py-2 bg-black text-white text-xs font-black uppercase rounded-lg border border-slate-200 shadow-sm hover:shadow-md">
                 Browse Files
               </div>
             </div>
@@ -95,25 +95,25 @@ export default function AssignmentsPage() {
       </Card>
 
       {/* Submissions List */}
-      <h2 className="text-xl font-black uppercase text-black tracking-tight mt-10">Your Submissions</h2>
+      <h2 className="text-xl font-black uppercase text-slate-800 tracking-tight mt-10">Your Submissions</h2>
 
       {/* Desktop View: Table */}
       <div className="hidden md:block">
-        <div className="border-4 border-black rounded-xl neo-shadow overflow-hidden bg-white">
+        <div className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
           <Table>
-            <TableHeader className="bg-slate-100 border-b-4 border-black">
+            <TableHeader className="bg-slate-100 border-b border-slate-200">
               <TableRow className="hover:bg-transparent">
-                <TableHead className="font-black text-black uppercase tracking-wider text-xs w-[300px]">Assignment</TableHead>
-                <TableHead className="font-black text-black uppercase tracking-wider text-xs">Course</TableHead>
-                <TableHead className="font-black text-black uppercase tracking-wider text-xs">Status</TableHead>
-                <TableHead className="font-black text-black uppercase tracking-wider text-xs text-right">Action / Score</TableHead>
+                <TableHead className="font-black text-slate-800 uppercase tracking-wider text-xs w-[300px]">Assignment</TableHead>
+                <TableHead className="font-black text-slate-800 uppercase tracking-wider text-xs">Course</TableHead>
+                <TableHead className="font-black text-slate-800 uppercase tracking-wider text-xs">Status</TableHead>
+                <TableHead className="font-black text-slate-800 uppercase tracking-wider text-xs text-right">Action / Score</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {assignments.map((assignment) => (
                 <TableRow key={assignment.id} className="border-b-2 border-slate-200">
                   <TableCell className="py-4">
-                    <p className="font-black uppercase text-sm text-black">{assignment.title}</p>
+                    <p className="font-black uppercase text-sm text-slate-800">{assignment.title}</p>
                     <p className="text-xs font-bold text-slate-500 uppercase mt-1">{assignment.type}</p>
                   </TableCell>
                   <TableCell className="py-4 font-bold text-sm text-slate-600">{assignment.course}</TableCell>
@@ -129,9 +129,9 @@ export default function AssignmentsPage() {
                   </TableCell>
                   <TableCell className="py-4 text-right">
                      {assignment.status === "completed" ? (
-                       <span className="font-black text-lg text-black">{assignment.score}</span>
+                       <span className="font-black text-lg text-slate-800">{assignment.score}</span>
                      ) : (
-                       <button className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase rounded-lg border-2 border-black hover:bg-[#dc0a2d] transition-colors neo-shadow-sm hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+                       <button className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-rose-500 to-red-600 transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-1 ">
                          Submit Now
                        </button>
                      )}
@@ -146,7 +146,7 @@ export default function AssignmentsPage() {
       {/* Mobile View: Stacked Cards */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {assignments.map((assignment) => (
-          <Card key={assignment.id} className="border-4 border-black rounded-xl neo-shadow bg-white">
+          <Card key={assignment.id} className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 bg-white">
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <div className="text-[10px] font-black text-[#43a047] uppercase tracking-widest mb-2 bg-green-50 inline-block px-2 py-1 border-2 border-[#43a047] rounded-md">
@@ -159,19 +159,19 @@ export default function AssignmentsPage() {
                 )}
               </div>
               
-              <h3 className="text-base font-black uppercase text-black leading-tight">{assignment.title}</h3>
+              <h3 className="text-base font-black uppercase text-slate-800 leading-tight">{assignment.title}</h3>
               <p className="text-xs font-bold text-slate-500 uppercase mt-1 mb-4">{assignment.type}</p>
               
               <div className="flex items-center justify-between pt-4 border-t-2 border-dashed border-slate-200">
                 {assignment.status === "completed" ? (
                   <>
                     <span className="text-xs font-black uppercase text-slate-500">Score</span>
-                    <span className="font-black text-lg text-black">{assignment.score}</span>
+                    <span className="font-black text-lg text-slate-800">{assignment.score}</span>
                   </>
                 ) : (
                   <>
                     <span className="text-xs font-bold text-amber-600 uppercase">Due: {assignment.dueDate}</span>
-                    <button className="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase rounded-lg border-2 border-black hover:bg-[#dc0a2d] transition-colors">
+                    <button className="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase rounded-lg border border-slate-200 hover:bg-gradient-to-br from-rose-500 to-red-600 transition-colors">
                       Submit
                     </button>
                   </>

@@ -7,8 +7,8 @@ export default function CalendarPage() {
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black uppercase text-black tracking-tight flex items-center gap-3">
-          <CalendarIcon size={36} className="text-[#dc0a2d]" strokeWidth={2.5} />
+        <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
+          <CalendarIcon size={36} className="text-rose-600" strokeWidth={2.5} />
           Academy Calendar
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -16,19 +16,19 @@ export default function CalendarPage() {
         </p>
       </header>
 
-      <div className="bg-yellow-50 border-4 border-[#ffcb05] rounded-xl p-4 mb-8 flex items-start gap-4">
+      <div className="bg-yellow-50 border-4 border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-4">
         <Info className="text-[#d4a017] shrink-0 mt-0.5" size={24} />
         <div>
-          <h3 className="font-black text-black uppercase text-sm mb-1">Google Calendar Integration</h3>
+          <h3 className="font-black text-slate-800 uppercase text-sm mb-1">Google Calendar Integration</h3>
           <p className="text-sm font-medium text-slate-700">
             This calendar is synced directly from the Academy&apos;s free Google Calendar. Any events added by instructors will instantly appear here for all students.
           </p>
         </div>
       </div>
 
-      <Card className="border-4 border-black rounded-xl neo-shadow overflow-hidden bg-white">
-        <CardHeader className="border-b-4 border-black bg-slate-100 flex flex-row items-center justify-between">
-          <CardTitle className="text-xl font-black uppercase text-black">Schedule</CardTitle>
+      <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
+        <CardHeader className="border-b border-slate-200 bg-slate-100 flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-black uppercase text-slate-800">Schedule</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] bg-slate-100 relative">
