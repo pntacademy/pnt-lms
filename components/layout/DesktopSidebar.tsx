@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, FileText, User, Settings, LogOut, GraduationCap } from "lucide-react";
+import { Home, BookOpen, FileText, User, Settings, LogOut, GraduationCap, Calendar, Briefcase, ClipboardCheck } from "lucide-react";
 
 export function DesktopSidebar() {
   const pathname = usePathname();
@@ -9,11 +9,14 @@ export function DesktopSidebar() {
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
     { href: "/dashboard/assignments", label: "Assignments", icon: FileText },
+    { href: "/dashboard/attendance", label: "Attendance", icon: ClipboardCheck },
+    { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
+    { href: "/dashboard/internships", label: "Internships", icon: Briefcase },
   ];
 
   const bottomLinks = [
+    { href: "/dashboard/admin", label: "Admin Panel", icon: Settings },
     { href: "/dashboard/profile", label: "Profile", icon: User },
-    { href: "/settings", label: "Settings", icon: Settings },
   ];
 
   const NavLink = ({ href, label, icon: Icon }: { href: string; label: string; icon: any }) => {

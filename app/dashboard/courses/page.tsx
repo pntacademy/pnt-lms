@@ -7,27 +7,19 @@ import { Badge } from "@/components/ui/badge";
 
 const courses = [
   {
-    id: "arduino-101",
-    title: "Intro to Arduino",
-    instructor: "Dr. Alan Turing",
-    level: "Beginner",
-    imageColor: "bg-[#dc0a2d]",
-    progress: 60,
-  },
-  {
-    id: "drone-assembly",
-    title: "Drone Assembly & Flight",
-    instructor: "Capt. Amelia Earhart",
-    level: "Intermediate",
-    imageColor: "bg-[#ffcb05]",
-    progress: 10,
-  },
-  {
-    id: "python-iot",
-    title: "Python for IoT",
-    instructor: "Ada Lovelace",
+    id: "robotics-master-30",
+    title: "Robotics Masterclass (30 Projects)",
+    instructor: "Admin",
     level: "Advanced",
-    imageColor: "bg-[#43a047]",
+    imageColor: "bg-[#dc0a2d]",
+    progress: 45,
+  },
+  {
+    id: "robotics-essentials-15",
+    title: "Robotics Essentials (15 Projects)",
+    instructor: "Admin",
+    level: "Beginner",
+    imageColor: "bg-[#ffcb05]",
     progress: 0,
   },
 ];
@@ -45,6 +37,9 @@ export default function CoursesPage() {
             Select a module to continue
           </p>
         </div>
+        <Link href="/dashboard/admin" className="px-5 py-3 bg-white border-2 border-black rounded-lg neo-shadow-sm font-black uppercase text-xs hover:bg-slate-50 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none transition-all flex items-center gap-2">
+          <span>+ Add Course (Admin)</span>
+        </Link>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

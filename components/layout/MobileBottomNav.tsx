@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, FileText, User } from "lucide-react";
+import { Home, BookOpen, FileText, User, Calendar, Briefcase } from "lucide-react";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
@@ -9,7 +9,8 @@ export function MobileBottomNav() {
     { href: "/dashboard", label: "Home", icon: Home },
     { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
     { href: "/dashboard/assignments", label: "Tasks", icon: FileText },
-    { href: "/dashboard/profile", label: "Profile", icon: User },
+    { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
+    { href: "/dashboard/internships", label: "Intern", icon: Briefcase },
   ];
 
   return (
