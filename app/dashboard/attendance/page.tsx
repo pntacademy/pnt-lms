@@ -1,21 +1,32 @@
-"use client";
-
 import { ClipboardCheck, Calendar as CalendarIcon, CheckCircle2, XCircle, Clock } from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import prisma from "@/lib/prisma";
 
-export default function AttendancePage() {
-  const attendanceRecords = [
-    { id: 1, date: "2026-04-20", status: "PRESENT", topic: "Robotics Basics: Motors & Sensors" },
-    { id: 2, date: "2026-04-18", status: "PRESENT", topic: "Introduction to Microcontrollers" },
-    { id: 3, date: "2026-04-15", status: "ABSENT", topic: "Arduino Setup & Hello World" },
-    { id: 4, date: "2026-04-12", status: "LATE", topic: "Breadboards & Wiring" },
-  ];
+export default async function AttendancePage() {
+  // Hardcoded for the MVP demo, but fetches live from Neon Postgres
+  const student = await prisma.user.findUnique({
+    where: { studentId: "PNT-2026-001" },
+    include: {
+      attendances: {
+        orderBy: { date: "desc" },
+        include: { course: true }
+      }
+    }
+  });
+
+  if (!student) {
+    return <div>Student not found. Please run the seed script.</div>;
+  }
+
+  const attendanceRecords = student.attendances;
 
   const totalClasses = 24;
-  const attended = 18;
-  const attendanceRate = Math.round((attended / totalClasses) * 100);
+  const attended = attendanceRecords.filter((r: any) => r.status === "PRESENT").length;
+  // Let's assume we want to show out of the total attended so far or just a fixed 24 classes
+  const attendanceRate = totalClasses > 0 ? Math.round((attended / totalClasses) * 100) : 0;
 
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
@@ -59,9 +70,9 @@ export default function AttendancePage() {
               </button>
             </div>
             <div className="w-full">
-              <button className="w-full px-4 py-3 bg-black text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1  transition-all flex items-center justify-center gap-2">
+              <Link href="/dashboard/admin/attendance" className="w-full px-4 py-3 bg-black text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1 transition-all flex items-center justify-center gap-2">
                 <ClipboardCheck size={16} /> Mark Attendance (Admin)
-              </button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -75,19 +86,23 @@ export default function AttendancePage() {
             <thead>
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-widest font-black text-slate-600">
                 <th className="p-4 border-r-2 border-slate-200">Date</th>
-                <th className="p-4 border-r-2 border-slate-200">Topic</th>
+                <th className="p-4 border-r-2 border-slate-200">Course</th>
                 <th className="p-4">Status</th>
               </tr>
             </thead>
             <tbody>
-              {attendanceRecords.map((record) => (
+              {attendanceRecords.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-4 text-center text-slate-500 font-bold uppercase text-xs">No records found.</td>
+                </tr>
+              ) : attendanceRecords.map((record: any) => (
                 <tr key={record.id} className="border-b-2 border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="p-4 border-r-2 border-slate-200 font-bold text-sm flex items-center gap-2">
                     <CalendarIcon size={16} className="text-slate-400" />
-                    {record.date}
+                    {new Date(record.date).toLocaleDateString()}
                   </td>
                   <td className="p-4 border-r-2 border-slate-200 font-bold text-sm text-slate-800">
-                    {record.topic}
+                    {record.course.title}
                   </td>
                   <td className="p-4">
                     {record.status === "PRESENT" && (
