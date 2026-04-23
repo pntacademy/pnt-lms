@@ -1,8 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, FileText, User, Calendar, Briefcase } from "lucide-react";
+import { Home, BookOpen, FileText, User, Calendar, Briefcase, Settings } from "lucide-react";
 
-export function MobileBottomNav() {
+export function MobileBottomNav({ role = "STUDENT" }: { role?: string }) {
   const pathname = usePathname();
 
   const links = [

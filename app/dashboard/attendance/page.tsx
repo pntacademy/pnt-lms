@@ -4,11 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export default async function AttendancePage() {
-  // Hardcoded for the MVP demo, but fetches live from Neon Postgres
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const role = (session.user as any).role || "STUDENT";
+
   const student = await prisma.user.findUnique({
-    where: { studentId: "PNT-2026-001" },
+    where: { id: session.user.id },
     include: {
       attendances: {
         orderBy: { date: "desc" },
@@ -69,11 +74,13 @@ export default async function AttendancePage() {
                 Join Zoom (Student)
               </button>
             </div>
-            <div className="w-full">
-              <Link href="/dashboard/admin/attendance" className="w-full px-4 py-3 bg-black text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1 transition-all flex items-center justify-center gap-2">
-                <ClipboardCheck size={16} /> Mark Attendance (Admin)
-              </Link>
-            </div>
+            {role !== "STUDENT" && (
+              <div className="w-full">
+                <Link href="/dashboard/admin/attendance" className="w-full px-4 py-3 bg-black text-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md font-black uppercase text-xs hover:-translate-y-0.5 active:translate-y-1 transition-all flex items-center justify-center gap-2">
+                  <ClipboardCheck size={16} /> Mark Attendance (Admin)
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

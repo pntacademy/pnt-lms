@@ -1,8 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, FileText, User, Settings, LogOut, GraduationCap, Calendar, Briefcase, ClipboardCheck } from "lucide-react";
 
-export function DesktopSidebar() {
+export function DesktopSidebar({ role = "STUDENT" }: { role?: string }) {
   const pathname = usePathname();
 
   const mainLinks = [
@@ -15,7 +17,9 @@ export function DesktopSidebar() {
   ];
 
   const bottomLinks = [
-    { href: "/dashboard/admin", label: "Admin Panel", icon: Settings },
+    ...(role === "ADMIN" || role === "TEACHER" 
+      ? [{ href: "/dashboard/admin", label: "Admin Panel", icon: Settings }] 
+      : []),
     { href: "/dashboard/profile", label: "Profile", icon: User },
   ];
 
