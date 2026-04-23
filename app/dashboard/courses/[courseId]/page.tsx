@@ -2,14 +2,19 @@
 
 import { Download, FileText, ChevronLeft, UploadCloud, Calendar, Info, FileUp, PlayCircle } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { projectsData } from "@/lib/data";
 
-export default function CourseLearningView({ params }: { params: { courseId: string } }) {
+export default function CourseLearningView() {
+  const params = useParams();
+  const courseId = params?.courseId as string | undefined;
+
+  if (!courseId) return null;
+
   // Extract project ID from "project-1"
-  const idMatch = params.courseId.match(/project-(\d+)/);
+  const idMatch = courseId.match(/project-(\d+)/);
   const projectId = idMatch ? parseInt(idMatch[1], 10) : null;
   
   const project = projectsData.find(p => p.id === projectId);
