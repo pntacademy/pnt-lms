@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { 
   Cpu, 
   Wifi, 
@@ -19,8 +16,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { projectsData, Project } from "@/lib/data";
+import prisma from "@/lib/prisma";
 
 // Helper to render the dynamic lucide icon
 const ProjectIcon = ({ type, className }: { type: string, className?: string }) => {
@@ -37,7 +33,11 @@ const ProjectIcon = ({ type, className }: { type: string, className?: string }) 
   }
 };
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const projectsData = await prisma.project.findMany({
+    orderBy: { id: "asc" }
+  });
+
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -70,7 +70,7 @@ export default function CoursesPage() {
 
         <TabsContent value="15-hour">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projectsData.filter(p => p.programs.includes("15-Hour")).map((project) => (
+            {projectsData.filter((p: any) => p.programs.includes("15-Hour")).map((project: any) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function CoursesPage() {
 
         <TabsContent value="30-hour">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projectsData.filter(p => p.programs.includes("30-Hour")).map((project) => (
+            {projectsData.filter((p: any) => p.programs.includes("30-Hour")).map((project: any) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
@@ -88,7 +88,7 @@ export default function CoursesPage() {
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project }: { project: any }) {
   return (
     <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden bg-white flex flex-col group hover:-translate-y-1 transition-transform">
       <div className="h-32 w-full border-b border-slate-200 flex items-center justify-center relative bg-gradient-to-br from-slate-50 to-slate-100">
@@ -111,7 +111,7 @@ function ProjectCard({ project }: { project: Project }) {
       
       <CardContent>
         <div className="flex flex-wrap gap-2">
-          {project.components.map((comp, idx) => (
+          {project.components.map((comp: string, idx: number) => (
             <span key={idx} className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-1 border border-slate-200 rounded-md inline-block uppercase tracking-wider">
               {comp}
             </span>

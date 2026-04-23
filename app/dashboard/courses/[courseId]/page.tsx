@@ -1,15 +1,13 @@
-"use client";
-
 import { Download, FileText, ChevronLeft, UploadCloud, Calendar, Info, FileUp, PlayCircle } from "lucide-react";
 import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { projectsData } from "@/lib/data";
+import prisma from "@/lib/prisma";
 
-export default function CourseLearningView() {
-  const params = useParams();
-  const courseId = params?.courseId as string | undefined;
+export default async function CourseLearningView({ params }: { params: Promise<{ courseId: string }> }) {
+  const resolvedParams = await params;
+  const courseId = resolvedParams.courseId;
 
   if (!courseId) return null;
 
@@ -17,7 +15,13 @@ export default function CourseLearningView() {
   const idMatch = courseId.match(/project-(\d+)/);
   const projectId = idMatch ? parseInt(idMatch[1], 10) : null;
   
-  const project = projectsData.find(p => p.id === projectId);
+  if (!projectId) {
+    notFound();
+  }
+
+  const project = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
   
   if (!project) {
     notFound();
@@ -69,7 +73,7 @@ export default function CourseLearningView() {
         <div className="mt-6 border-t border-slate-100 pt-4">
             <h3 className="text-xs font-black uppercase text-slate-500 tracking-widest mb-3">Required Components</h3>
             <div className="flex flex-wrap gap-2">
-                {project.components.map((comp, idx) => (
+                {project.components.map((comp: string, idx: number) => (
                 <span key={idx} className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-1 border border-slate-200 rounded-md inline-block uppercase tracking-wider">
                     {comp}
                 </span>

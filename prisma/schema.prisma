@@ -45,7 +45,6 @@ model Course {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  projects    Project[]
   enrollments Enrollment[]
   attendances Attendance[]
 }
@@ -65,16 +64,16 @@ model Enrollment {
 }
 
 model Project {
-  id          String   @id @default(cuid())
+  id          Int      @id // Fixed IDs 1-15
   title       String
-  description String?
-  orderIndex  Int
-  courseId    String
+  objective   String
+  components  String[]
+  programs    String[]
+  iconType    String
   videoUrl    String?  // YouTube Unlisted
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   assignments Assignment[]
 }
 
@@ -83,7 +82,7 @@ model Assignment {
   title       String
   description String?
   dueDate     DateTime?
-  projectId   String
+  projectId   Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
