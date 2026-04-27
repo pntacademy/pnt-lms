@@ -13,7 +13,7 @@ type Submission = {
   id: string;
   status: string;
   score: number | null;
-  teacherFeedback: string | null;
+  feedback: string | null;
   fileUrl: string | null;
   studentNotes: string | null;
   submittedAt: Date;
@@ -196,7 +196,7 @@ export default function AdminAssignmentsPage() {
                         onClick={() => {
                           setSelectedSubmission(sub);
                           setScore(sub.score?.toString() || "");
-                          setFeedback(sub.teacherFeedback || "");
+                          setFeedback(sub.feedback || "");
                         }}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold uppercase rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-sm"
                       >

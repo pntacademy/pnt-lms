@@ -59,10 +59,8 @@ export async function gradeSubmission(submissionId: string, score: number, feedb
       where: { id: submissionId },
       data: {
         score,
-        teacherFeedback: feedback || null,
+        feedback: feedback || null,
         status: "GRADED",
-        gradedAt: new Date(),
-        gradedBy: session.user.id,
       }
     });
 
