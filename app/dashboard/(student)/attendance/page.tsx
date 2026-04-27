@@ -28,9 +28,8 @@ export default async function AttendancePage() {
 
   const attendanceRecords = student.attendances;
 
-  const totalClasses = 24;
+  const totalClasses = attendanceRecords.length;
   const attended = attendanceRecords.filter((r: any) => r.status === "PRESENT").length;
-  // Let's assume we want to show out of the total attended so far or just a fixed 24 classes
   const attendanceRate = totalClasses > 0 ? Math.round((attended / totalClasses) * 100) : 0;
 
   return (
