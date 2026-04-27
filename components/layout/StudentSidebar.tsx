@@ -29,7 +29,7 @@ const bottomLinks = [
   { href: "/dashboard/profile", label: "Profile", icon: User },
 ];
 
-export function StudentSidebar({ role = "STUDENT" }: { role?: string }) {
+export function StudentSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string, exact?: boolean) =>
@@ -103,15 +103,6 @@ export function StudentSidebar({ role = "STUDENT" }: { role?: string }) {
 
       {/* Bottom Navigation */}
       <div className="space-y-2 pt-6 border-t-2 border-dashed border-slate-200">
-        {(role === "ADMIN" || role === "TEACHER") && (
-          <Link
-            href="/dashboard/admin"
-            className="flex items-center gap-4 px-4 py-3 rounded-xl border-2 border-transparent text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 transition-all group"
-          >
-            <ShieldCheck size={22} strokeWidth={2} />
-            <span className="text-sm uppercase font-black tracking-wider">Staff View</span>
-          </Link>
-        )}
         {bottomLinks.map((link) => (
           <NavLink key={link.href} {...link} />
         ))!}

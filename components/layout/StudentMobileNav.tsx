@@ -13,7 +13,7 @@ const links = [
   { href: "/dashboard/internships", label: "Intern", icon: Briefcase },
 ];
 
-export function StudentMobileNav({ role = "STUDENT" }: { role?: string }) {
+export function StudentMobileNav() {
   const pathname = usePathname();
 
   return (
@@ -42,17 +42,6 @@ export function StudentMobileNav({ role = "STUDENT" }: { role?: string }) {
           </Link>
         );
       })}
-
-      {/* Admin Link if applicable */}
-      {(role === "ADMIN" || role === "TEACHER") && (
-        <Link
-          href="/dashboard/admin"
-          className="flex flex-col items-center justify-center w-14 h-14 rounded-xl border-2 border-transparent text-slate-500 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-all"
-        >
-          <ShieldCheck size={22} strokeWidth={2} />
-          <span className="text-[9px] mt-1 uppercase font-black tracking-wider">Staff</span>
-        </Link>
-      )}
 
       {/* Logout */}
       <button

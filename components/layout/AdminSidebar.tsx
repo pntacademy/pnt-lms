@@ -87,15 +87,6 @@ export function AdminSidebar() {
 
       {/* Bottom */}
       <div className="space-y-2 pt-6 border-t border-slate-800">
-        {/* Back to student view */}
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-slate-400 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition-all"
-        >
-          <ArrowLeftCircle size={20} strokeWidth={2} />
-          <span className="text-sm uppercase font-black tracking-wider">Student View</span>
-        </Link>
-
         {/* Logout */}
         <button
           onClick={() => signOut({ callbackUrl: "/admin-login" })}

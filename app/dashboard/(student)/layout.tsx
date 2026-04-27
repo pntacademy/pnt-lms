@@ -16,13 +16,17 @@ export default async function DashboardLayout({
 
   const role = (session.user as any).role || "STUDENT";
 
+  if (role === "ADMIN" || role === "TEACHER") {
+    redirect("/dashboard/admin");
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <StudentSidebar role={role} />
+      <StudentSidebar />
       <main className="flex-1 pb-20 md:pb-0 relative overflow-x-hidden">
         {children}
       </main>
-      <StudentMobileNav role={role} />
+      <StudentMobileNav />
     </div>
   );
 }
