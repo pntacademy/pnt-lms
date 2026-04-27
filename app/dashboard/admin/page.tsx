@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Settings, PlusCircle, Users, CheckSquare, BarChart, Download, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -90,32 +91,32 @@ export default function AdminPage() {
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <Settings size={36} className="text-red-500" strokeWidth={2.5} />
-          Admin & Teacher Panel
+          <Settings size={36} className="text-indigo-600" strokeWidth={2.5} />
+          Staff Portal
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
           Manage courses, assignments, and students
         </p>
       </header>
 
-      {/* Quick Actions (Visual Only) */}
+      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <button className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-orange-300 to-amber-400 border border-slate-200 rounded-xl shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
-          <PlusCircle size={32} strokeWidth={2.5} className="text-slate-800" />
-          <span className="font-black uppercase text-sm text-slate-800">Add New Course</span>
-        </button>
-        <button className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
+        <Link href="/dashboard/admin/courses" className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-blue-500 to-indigo-600 border border-indigo-700 rounded-xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all group">
+          <PlusCircle size={32} strokeWidth={2.5} className="text-white" />
+          <span className="font-black uppercase text-sm text-white">Manage Courses</span>
+        </Link>
+        <Link href="/dashboard/admin/assignments" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
           <CheckSquare size={32} strokeWidth={2.5} className="text-slate-800" />
           <span className="font-black uppercase text-sm text-slate-800">Grade Assignments</span>
-        </button>
-        <button className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
+        </Link>
+        <Link href="/dashboard/admin/attendance" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
           <Users size={32} strokeWidth={2.5} className="text-slate-800" />
           <span className="font-black uppercase text-sm text-slate-800">Mark Attendance</span>
-        </button>
-        <button className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
+        </Link>
+        <Link href="/dashboard/admin/students" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
           <BarChart size={32} strokeWidth={2.5} className="text-slate-800" />
-          <span className="font-black uppercase text-sm text-slate-800">Student Reports</span>
-        </button>
+          <span className="font-black uppercase text-sm text-slate-800">Manage Students</span>
+        </Link>
       </div>
 
       {/* Student Onboarding Tool */}
@@ -227,7 +228,7 @@ export default function AdminPage() {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-red-400 to-rose-500 text-white rounded-lg font-black uppercase text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-lg font-black uppercase text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50"
             >
               {isSubmitting ? "Generating..." : "Generate Accounts"}
             </button>

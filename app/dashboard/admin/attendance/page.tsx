@@ -32,11 +32,11 @@ export default function AdminAttendancePage() {
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-2xl mx-auto">
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <ClipboardCheck size={36} className="text-red-500" strokeWidth={2.5} />
+          <ClipboardCheck size={36} className="text-indigo-600" strokeWidth={2.5} />
           Mark Attendance
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
-          Teacher & Admin Portal
+          Staff Portal
         </p>
       </header>
 
@@ -91,7 +91,7 @@ export default function AdminAttendancePage() {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-red-400 to-rose-500 text-white rounded-lg font-black uppercase text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-lg font-black uppercase text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50"
             >
               <Save size={18} /> {isSubmitting ? "Saving..." : "Save Record"}
             </button>

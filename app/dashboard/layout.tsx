@@ -1,5 +1,5 @@
-import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { StudentSidebar } from "@/components/layout/StudentSidebar";
+import { StudentMobileNav } from "@/components/layout/StudentMobileNav";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -17,18 +17,12 @@ export default async function DashboardLayout({
   const role = (session.user as any).role || "STUDENT";
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fa] selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800">
-      <DesktopSidebar role={role} />
-      
-      {/* 
-        Main content area needs bottom padding on mobile to account for the fixed bottom nav.
-        md:pb-0 removes this padding on desktop where the sidebar is used instead.
-      */}
+    <div className="flex min-h-screen bg-slate-50">
+      <StudentSidebar role={role} />
       <main className="flex-1 pb-20 md:pb-0 relative overflow-x-hidden">
         {children}
       </main>
-
-      <MobileBottomNav role={role} />
+      <StudentMobileNav role={role} />
     </div>
   );
 }
