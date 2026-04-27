@@ -1,57 +1,106 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+export async function getAllStudents() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
 
-export async function bulkCreateStudents(studentsData: any[]) {
-  try {
-    const createdStudents = [];
+  const students = await prisma.user.findMany({
+    where: { role: "STUDENT" },
+    orderBy: { createdAt: "desc" },
+    include: {
+      enrollments: { include: { course: { select: { title: true } } } },
+      attendances: { select: { status: true } },
+      submissions: { select: { score: true, status: true } },
+    },
+  });
 
-    // Prefix for student ID based on current year
-    const yearPrefix = `PNT-${new Date().getFullYear()}-`;
+  return students.map((s) => {
+    const total = s.attendances.length;
+    const present = s.attendances.filter((a) => a.status === "PRESENT").length;
+    const attendancePct = total > 0 ? Math.round((present / total) * 100) : null;
+    const graded = s.submissions.filter((sub) => sub.score !== null);
+    const avgScore =
+      graded.length > 0
+        ? Math.round(graded.reduce((acc, sub) => acc + (sub.score ?? 0), 0) / graded.length)
+        : null;
+    return {
+      id: s.id,
+      studentId: s.studentId,
+      name: s.name,
+      className: s.className,
+      instituteName: s.instituteName,
+      contactNumber: s.contactNumber,
+      age: s.age,
+      createdAt: s.createdAt,
+      enrolledCourses: s.enrollments.map((e) => e.course.title),
+      attendancePct,
+      avgScore,
+      totalAttendance: total,
+      totalSubmissions: s.submissions.length,
+    };
+  });
+}
 
-    for (let i = 0; i < studentsData.length; i++) {
-      const data = studentsData[i];
-      
-      // Auto-generate a password (e.g., 6 random digits)
-      const rawPassword = Math.floor(100000 + Math.random() * 900000).toString();
-      const passwordHash = await bcrypt.hash(rawPassword, 10);
-      
-      // Auto-generate a unique Student ID
-      const count = await prisma.user.count({ where: { role: "STUDENT" } });
-      const studentId = `${yearPrefix}${(count + i + 1).toString().padStart(3, '0')}`;
+export async function registerStudent(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
 
-      const newStudent = await prisma.user.create({
-        data: {
-          studentId,
-          passwordHash,
-          name: data.name,
-          className: data.className,
-          instituteName: data.instituteName,
-          age: parseInt(data.age) || null,
-          contactNumber: data.contactNumber,
-          role: "STUDENT",
-        }
-      });
+  const name = formData.get("name") as string;
+  const className = formData.get("className") as string;
+  const instituteName = formData.get("instituteName") as string;
+  const age = formData.get("age") as string;
+  const contactNumber = formData.get("contactNumber") as string;
+  const courseId = formData.get("courseId") as string;
 
-      createdStudents.push({
-        studentId: newStudent.studentId,
-        name: newStudent.name,
-        rawPassword, // We return this exactly ONCE so the teacher can save it
-        className: newStudent.className,
-      });
-    }
+  if (!name || !className) throw new Error("Name and Class are required");
 
-    return { success: true, data: createdStudents };
+  // Auto-generate next student ID
+  const lastStudent = await prisma.user.findFirst({
+    where: { role: "STUDENT", studentId: { not: null } },
+    orderBy: { createdAt: "desc" },
+  });
 
-  } catch (error) {
-    console.error("Bulk create error:", error);
-    return { success: false, error: "Failed to create students" };
+  let nextNum = 1;
+  if (lastStudent?.studentId) {
+    const parts = lastStudent.studentId.split("-");
+    const lastNum = parseInt(parts[parts.length - 1], 10);
+    if (!isNaN(lastNum)) nextNum = lastNum + 1;
   }
+
+  const year = new Date().getFullYear();
+  const studentId = `PNT-${year}-${String(nextNum).padStart(3, "0")}`;
+
+  const student = await prisma.user.create({
+    data: {
+      studentId,
+      name,
+      role: "STUDENT",
+      className,
+      instituteName: instituteName || null,
+      age: age ? parseInt(age) : null,
+      contactNumber: contactNumber || null,
+    },
+  });
+
+  // Auto-enroll in course if provided
+  if (courseId) {
+    await prisma.enrollment.create({
+      data: { userId: student.id, courseId },
+    });
+  }
+
+  revalidatePath("/dashboard/admin/students");
+  return { studentId };
+}
+
+export async function deleteStudent(studentDbId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  await prisma.user.delete({ where: { id: studentDbId } });
+  revalidatePath("/dashboard/admin/students");
 }
