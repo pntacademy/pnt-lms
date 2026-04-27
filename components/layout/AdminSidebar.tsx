@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -9,7 +10,6 @@ import {
   ClipboardCheck,
   BookOpen,
   FileCheck2,
-  ShieldCheck,
   LogOut,
   ArrowLeftCircle,
 } from "lucide-react";
@@ -60,9 +60,7 @@ export function AdminSidebar() {
     <aside className="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 h-screen sticky top-0 left-0 p-6 z-40">
       {/* Logo */}
       <div className="flex items-center gap-3 mb-10">
-        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-lg border border-indigo-700 shadow-lg shadow-indigo-900/40">
-          <ShieldCheck size={26} className="text-white" strokeWidth={2.5} />
-        </div>
+        <Image src="/logo.svg" alt="PNT Academy" width={40} height={40} className="rounded-lg" />
         <div>
           <h1 className="font-black text-lg leading-none uppercase tracking-tight text-white">
             PNT Academy

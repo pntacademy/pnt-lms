@@ -1,0 +1,13 @@
+{
+  "appId": "com.pntacademy.lms",
+  "appName": "PNT Academy LMS",
+  "webDir": "out",
+  "server": {
+    "url": "https://pnt-lms.vercel.app",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#ffffff"
+  }
+}

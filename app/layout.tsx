@@ -22,8 +22,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PNT Academy | Retro Edition",
-  description: "Your journey starts here.",
+  title: "PNT Academy LMS",
+  description: "PNT Academy Learning Management System",
+  manifest: "/manifest.json",
+  themeColor: "#1e293b",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PNT LMS",
+  },
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({

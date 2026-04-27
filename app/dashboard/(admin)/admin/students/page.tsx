@@ -4,8 +4,10 @@ import { useState, useEffect, useTransition } from "react";
 import {
   Users, Search, Plus, X, Trash2, GraduationCap,
   CheckCircle2, ClipboardCheck, BookOpen, ChevronRight,
-  Phone, Building2, Calendar
+  Phone, Building2, Calendar, Download
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { getAllStudents, registerStudent, deleteStudent } from "@/app/actions/students";
 import { getCourses } from "@/app/actions/attendance";
 
@@ -58,6 +60,34 @@ export default function AdminStudentsPage() {
     });
   };
 
+  const downloadRoster = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.setTextColor(30, 41, 59);
+    doc.text("PNT Academy — Student Roster", 14, 18);
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Generated: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · Total: ${students.length} students`, 14, 26);
+    autoTable(doc, {
+      startY: 32,
+      head: [["Roll ID", "Name", "Class", "School", "Contact", "Attendance", "Avg Score"]],
+      body: students.map(s => [
+        s.studentId || "—",
+        s.name || "—",
+        s.className || "—",
+        s.instituteName || "—",
+        s.contactNumber || "—",
+        s.attendancePct !== null ? `${s.attendancePct}%` : "—",
+        s.avgScore !== null ? `${s.avgScore}/100` : "—",
+      ]),
+      theme: "grid",
+      styles: { fontSize: 9, cellPadding: 4 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [241, 245, 249] },
+    });
+    doc.save(`PNT_Roster_${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
   const handleDelete = (student: Student) => {
     if (!confirm(`Are you sure you want to delete ${student.name}? This cannot be undone.`)) return;
     startTransition(async () => {
@@ -88,6 +118,13 @@ export default function AdminStudentsPage() {
           className="flex items-center gap-2 px-5 py-3 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-xl font-black uppercase text-sm tracking-wider shadow-md shadow-indigo-200 hover:shadow-lg hover:-translate-y-0.5 transition-all"
         >
           <Plus size={20} /> Register Student
+        </button>
+        <button
+          onClick={downloadRoster}
+          disabled={students.length === 0}
+          className="flex items-center gap-2 px-5 py-3 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-black uppercase text-sm tracking-wider hover:border-indigo-300 hover:text-indigo-700 hover:-translate-y-0.5 transition-all disabled:opacity-40"
+        >
+          <Download size={20} /> Download Roster
         </button>
       </div>
 
