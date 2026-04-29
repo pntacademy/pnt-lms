@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -12,8 +13,6 @@ import {
   Briefcase,
   User,
   LogOut,
-  GraduationCap,
-  ShieldCheck,
 } from "lucide-react";
 
 const mainLinks = [
@@ -76,9 +75,13 @@ export function StudentSidebar() {
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 h-screen sticky top-0 left-0 p-6 z-40">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-3 mb-10 group">
-        <div className="bg-gradient-to-br from-red-400 to-rose-500 p-2 rounded-lg border border-rose-300 shadow-md group-hover:-translate-y-1 transition-transform">
-          <GraduationCap size={26} className="text-white" strokeWidth={2.5} />
-        </div>
+        <Image
+          src="/logo.svg"
+          alt="PNT Academy"
+          width={44}
+          height={44}
+          className="rounded-xl shadow-md group-hover:-translate-y-1 transition-transform"
+        />
         <div>
           <h1 className="font-black text-xl leading-none uppercase tracking-tight text-slate-800">
             PNT Academy
