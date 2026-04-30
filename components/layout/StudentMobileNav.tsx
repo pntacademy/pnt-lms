@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookOpen, FileText, Calendar, Briefcase, LogOut, ShieldCheck } from "lucide-react";
+import { Home, BookOpen, FileText, Calendar, Briefcase, LogOut, BarChart } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Home", icon: Home, exact: true },
   { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
   { href: "/dashboard/assignments", label: "Tasks", icon: FileText },
-  { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
+  { href: "/dashboard/analytics", label: "Report", icon: BarChart },
   { href: "/dashboard/internships", label: "Intern", icon: Briefcase },
 ];
 

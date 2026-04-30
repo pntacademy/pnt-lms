@@ -13,6 +13,7 @@ import {
   Briefcase,
   User,
   LogOut,
+  BarChart,
 } from "lucide-react";
 
 const mainLinks = [
@@ -20,6 +21,7 @@ const mainLinks = [
   { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
   { href: "/dashboard/assignments", label: "Assignments", icon: FileText },
   { href: "/dashboard/attendance", label: "Attendance", icon: ClipboardCheck },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart },
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
   { href: "/dashboard/internships", label: "Internships", icon: Briefcase },
 ];
