@@ -64,8 +64,9 @@ for (const { folder, size } of sizes) {
 
   try {
     execSync(cmd, { stdio: "inherit" });
-    // Copy as round variant too
+    // Copy as round variant and foreground variant for adaptive icons
     fs.copyFileSync(destFile, destRound);
+    fs.copyFileSync(destFile, path.join(destDir, "ic_launcher_foreground.png"));
     console.log(`✅ ${folder} → ${size}x${size}px`);
   } catch (e) {
     console.error(`❌ Failed for ${folder}:`, e.message);
