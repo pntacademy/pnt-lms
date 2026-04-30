@@ -127,14 +127,27 @@ export default function AssignmentsPage() {
                     onChange={(e) => setSelectedAssignmentId(e.target.value)}
                     className="w-full border border-slate-200 rounded-lg p-3 bg-white text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#ffcb05]"
                   >
-                    {pendingAssignments.length === 0 && (
-                      <option value="">All assignments submitted!</option>
+                    {pendingAssignments.length === 0 && submittedAssignments.length === 0 && (
+                      <option value="">No assignments available</option>
                     )}
-                    {pendingAssignments.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.courseTopic ? `${a.courseTopic.course.title}: ` : (a.project ? `Project ${a.project.id}: ` : "")} {a.title}
-                      </option>
-                    ))}
+                    {pendingAssignments.length > 0 && (
+                      <optgroup label="Pending Assignments">
+                        {pendingAssignments.map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.courseTopic ? `${a.courseTopic.course.title}: ` : (a.project ? `Project ${a.project.id}: ` : "")} {a.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                    {submittedAssignments.length > 0 && (
+                      <optgroup label="Submitted (Resubmit)">
+                        {submittedAssignments.map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.courseTopic ? `${a.courseTopic.course.title}: ` : (a.project ? `Project ${a.project.id}: ` : "")} {a.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </select>
                 )}
               </div>
@@ -195,7 +208,7 @@ export default function AssignmentsPage() {
                 {isUploading ? (
                   <><Loader2 className="animate-spin" size={20} /> Uploading to Cloud...</>
                 ) : (
-                  "Submit Assignment"
+                  submittedAssignments.some(a => a.id === selectedAssignmentId) ? "Submit New Version" : "Submit Assignment"
                 )}
               </button>
             </div>
@@ -249,6 +262,15 @@ export default function AssignmentsPage() {
                             Submitted
                           </Badge>
                         )}
+                        <button
+                          onClick={() => {
+                            setSelectedAssignmentId(a.id);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="ml-3 text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-800 hover:underline"
+                        >
+                          Resubmit
+                        </button>
                       </TableCell>
                       <TableCell className="py-4 text-right font-black text-slate-800">
                         {sub.score != null ? `${sub.score}/100` : "—"}
@@ -277,7 +299,18 @@ export default function AssignmentsPage() {
                     <p className="text-xs font-bold text-slate-500 uppercase mt-1 mb-4">Due: {formatDue(a.dueDate)}</p>
                     <div className="flex items-center justify-between pt-4 border-t-2 border-dashed border-slate-200">
                       <span className="text-xs font-black uppercase text-slate-500">Score</span>
-                      <span className="font-black text-lg text-slate-800">{sub.score != null ? `${sub.score}/100` : "Pending"}</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedAssignmentId(a.id);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:underline"
+                        >
+                          Resubmit
+                        </button>
+                        <span className="font-black text-lg text-slate-800">{sub.score != null ? `${sub.score}/100` : "Pending"}</span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
