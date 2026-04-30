@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import {
   getAllSubmissions, gradeSubmission,
-  getAllAssignments, getAllProjects,
+  getAllAssignments, getCoursesWithTopics,
   createAssignment, deleteAssignment,
 } from "@/app/actions/adminAssignments";
 import { getDownloadPresignedUrl } from "@/app/actions/download";
@@ -20,7 +20,8 @@ type Assignment = {
   title: string;
   description: string | null;
   dueDate: Date | null;
-  project: { id: number; title: string };
+  courseTopic: { id: string; title: string; course: { id: string; title: string } } | null;
+  project: { id: number; title: string } | null;
   _count: { submissions: number };
 };
 
@@ -33,17 +34,19 @@ type Submission = {
   studentNotes: string | null;
   submittedAt: Date;
   user: { name: string | null; studentId: string | null; className: string | null };
-  assignment: { title: string; project: { id: number; title: string } };
+  assignment: { title: string; project: { id: number; title: string } | null; courseTopic: { title: string; course: { title: string } } | null };
 };
 
-type Project = { id: number; title: string };
+type CourseTopic = { id: string; title: string };
+type Course = { id: string; title: string; topics: CourseTopic[] };
 
 export default function AdminAssignmentsPage() {
   const [tab, setTab] = useState<Tab>("assign");
 
   // Assign tab state
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -59,15 +62,17 @@ export default function AdminAssignmentsPage() {
 
   const load = async () => {
     setIsLoading(true);
-    const [a, p, s] = await Promise.all([getAllAssignments(), getAllProjects(), getAllSubmissions()]);
+    const [a, c, s] = await Promise.all([getAllAssignments(), getCoursesWithTopics(), getAllSubmissions()]);
     if (a.success && a.assignments) setAssignments(a.assignments as Assignment[]);
-    if (p.success && p.projects) setProjects(p.projects as Project[]);
+    if (c.success && c.courses) setCourses(c.courses as Course[]);
     if (s.success && s.submissions) setSubmissions(s.submissions as Submission[]);
     setIsLoading(false);
   };
 
   useEffect(() => { load(); }, []);
 
+  // Topics for currently selected course
+  const selectedCourseTopics = courses.find(c => c.id === selectedCourseId)?.topics ?? [];
   const pendingCount = submissions.filter(s => s.status === "SUBMITTED").length;
 
   // ── Create Assignment ──────────────────────────────────────────
@@ -193,7 +198,7 @@ export default function AdminAssignmentsPage() {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex-1 min-w-0">
                         <span className="text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full inline-block mb-1.5">
-                          Project {a.project.id}
+                          {a.courseTopic ? a.courseTopic.course.title : (a.project ? `Project ${a.project.id}` : "Assignment")}
                         </span>
                         <h3 className="font-black text-sm text-slate-800 leading-tight">{a.title}</h3>
                       </div>
@@ -218,7 +223,7 @@ export default function AdminAssignmentsPage() {
                     </div>
 
                     <p className="text-[10px] text-slate-400 truncate">
-                      <span className="font-bold text-slate-500">Project:</span> {a.project.title}
+                      <span className="font-bold text-slate-500">Topic:</span> {a.courseTopic?.title || a.project?.title || "-"}
                     </p>
                   </div>
                 </div>
@@ -247,11 +252,20 @@ export default function AdminAssignmentsPage() {
                     <textarea name="description" rows={3} placeholder="Describe what students need to submit..." className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Linked Project *</label>
-                    <select required name="projectId" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
-                      <option value="">Select a project...</option>
-                      {projects.map(p => (
-                        <option key={p.id} value={p.id}>Project {p.id} — {p.title}</option>
+                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Course *</label>
+                    <select required name="courseId" value={selectedCourseId} onChange={e => setSelectedCourseId(e.target.value)} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+                      <option value="">Select a course...</option>
+                      {courses.map(c => (
+                        <option key={c.id} value={c.id}>{c.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Topic *</label>
+                    <select required name="courseTopicId" disabled={!selectedCourseId} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white disabled:bg-slate-50 disabled:text-slate-400">
+                      <option value="">Select a topic...</option>
+                      {selectedCourseTopics.map(t => (
+                        <option key={t.id} value={t.id}>{t.title}</option>
                       ))}
                     </select>
                   </div>
@@ -333,7 +347,9 @@ export default function AdminAssignmentsPage() {
             <div className="flex items-center justify-between p-6 border-b bg-slate-50">
               <div>
                 <h2 className="font-black text-lg uppercase text-slate-800">Review Submission</h2>
-                <p className="text-xs font-bold text-slate-500 mt-0.5">{selectedSubmission.user.name} · Project {selectedSubmission.assignment.project.id}</p>
+                <p className="text-xs font-bold text-slate-500 mt-0.5">
+                  {selectedSubmission.user.name} · {selectedSubmission.assignment.courseTopic?.course.title || "Project " + selectedSubmission.assignment.project?.id}
+                </p>
               </div>
               <button onClick={() => setSelectedSubmission(null)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500"><X size={20} /></button>
             </div>
@@ -346,7 +362,7 @@ export default function AdminAssignmentsPage() {
                 <div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Attached File</p>
                   <button
-                    onClick={() => handleDownload(selectedSubmission.fileUrl, `${selectedSubmission.user.name}_Project${selectedSubmission.assignment.project.id}`)}
+                    onClick={() => handleDownload(selectedSubmission.fileUrl, `${selectedSubmission.user.name}_Submission`)}
                     className="w-full flex items-center justify-between p-4 bg-indigo-50 border-2 border-indigo-100 rounded-xl hover:bg-indigo-100 transition-colors group"
                   >
                     <div className="flex items-center gap-3">

@@ -15,6 +15,13 @@ export async function getAllAssignments() {
     const assignments = await prisma.assignment.findMany({
       include: {
         project: { select: { id: true, title: true } },
+        courseTopic: {
+          select: {
+            id: true,
+            title: true,
+            course: { select: { id: true, title: true } },
+          },
+        },
         _count: { select: { submissions: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -25,18 +32,25 @@ export async function getAllAssignments() {
   }
 }
 
-export async function getAllProjects() {
+export async function getCoursesWithTopics() {
   const session = await auth();
   if (!session?.user) return { error: "Unauthorized" };
 
   try {
-    const projects = await prisma.project.findMany({
-      select: { id: true, title: true },
-      orderBy: { id: "asc" },
+    const courses = await prisma.course.findMany({
+      select: {
+        id: true,
+        title: true,
+        topics: {
+          select: { id: true, title: true },
+          orderBy: { order: "asc" },
+        },
+      },
+      orderBy: { createdAt: "asc" },
     });
-    return { success: true, projects };
+    return { success: true, courses };
   } catch (error) {
-    return { error: "Failed to fetch projects" };
+    return { error: "Failed to fetch courses" };
   }
 }
 
@@ -47,16 +61,18 @@ export async function createAssignment(formData: FormData) {
 
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || null;
-  const projectId = parseInt(formData.get("projectId") as string);
+  const courseTopicId = (formData.get("courseTopicId") as string) || null;
+  const courseId = (formData.get("courseId") as string) || null;
   const dueDateStr = formData.get("dueDate") as string;
   const dueDate = dueDateStr ? new Date(dueDateStr) : null;
 
   if (!title) return { error: "Title is required" };
-  if (isNaN(projectId)) return { error: "Project is required" };
+  if (!courseTopicId) return { error: "Please select a topic" };
+  if (!courseId) return { error: "Please select a course" };
 
   try {
     const assignment = await prisma.assignment.create({
-      data: { title, description, projectId, dueDate },
+      data: { title, description, courseTopicId, courseId, dueDate },
     });
     revalidatePath("/dashboard/admin/assignments");
     revalidatePath("/dashboard/assignments");
@@ -108,6 +124,13 @@ export async function getAllSubmissions() {
               select: {
                 id: true,
                 title: true,
+              }
+            },
+            courseTopic: {
+              select: {
+                id: true,
+                title: true,
+                course: { select: { id: true, title: true } }
               }
             }
           }

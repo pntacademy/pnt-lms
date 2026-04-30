@@ -10,13 +10,25 @@ export async function getStudentAssignments() {
   }
 
   try {
-    // Get all assignments for the courses the student is enrolled in
-    // Wait, the schema has `Project` with assignments. Course is not directly linked to Assignment?
-    // Let's check schema: Course has no direct Assignments. Project has Assignments.
-    // Let's just fetch all assignments for simplicity right now, or link them to Projects.
+    // Get student's enrollments
+    const enrollments = await prisma.enrollment.findMany({
+      where: { userId: session.user.id },
+      select: { courseId: true }
+    });
+    const courseIds = enrollments.map(e => e.courseId);
+
     const assignments = await prisma.assignment.findMany({
+      where: {
+        OR: [
+          { courseId: { in: courseIds } },
+          { courseId: null } // Include legacy project-based assignments
+        ]
+      },
       include: {
         project: true,
+        courseTopic: {
+          select: { title: true, course: { select: { title: true } } }
+        },
         submissions: {
           where: {
             userId: session.user.id
@@ -24,7 +36,7 @@ export async function getStudentAssignments() {
         }
       },
       orderBy: {
-        dueDate: 'asc'
+        createdAt: 'desc'
       }
     });
 

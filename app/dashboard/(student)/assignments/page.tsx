@@ -14,7 +14,8 @@ type Assignment = {
   title: string;
   description: string | null;
   dueDate: Date | null;
-  project: { id: number; title: string };
+  project: { id: number; title: string } | null;
+  courseTopic: { title: string; course: { title: string } } | null;
   submissions: { status: string; score: number | null; fileUrl: string | null }[];
 };
 
@@ -131,7 +132,7 @@ export default function AssignmentsPage() {
                     )}
                     {pendingAssignments.map((a) => (
                       <option key={a.id} value={a.id}>
-                        Project {a.project.id}: {a.title}
+                        {a.courseTopic ? `${a.courseTopic.course.title}: ` : (a.project ? `Project ${a.project.id}: ` : "")} {a.title}
                       </option>
                     ))}
                   </select>
@@ -235,7 +236,9 @@ export default function AssignmentsPage() {
                       <TableCell className="py-4">
                         <p className="font-black uppercase text-sm text-slate-800">{a.title}</p>
                       </TableCell>
-                      <TableCell className="py-4 font-bold text-sm text-slate-600">Project {a.project.id}</TableCell>
+                      <TableCell className="py-4 font-bold text-sm text-slate-600">
+                        {a.courseTopic ? a.courseTopic.course.title : (a.project ? `Project ${a.project.id}` : "Assignment")}
+                      </TableCell>
                       <TableCell className="py-4 text-sm text-slate-500 font-medium">{formatDue(a.dueDate)}</TableCell>
                       <TableCell className="py-4">
                         {sub.status === "GRADED" ? (
@@ -266,7 +269,7 @@ export default function AssignmentsPage() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="text-[10px] font-black text-[#43a047] uppercase tracking-widest bg-green-50 inline-block px-2 py-1 border-2 border-[#43a047] rounded-md">
-                        Project {a.project.id}
+                        {a.courseTopic ? a.courseTopic.course.title : (a.project ? `Project ${a.project.id}` : "Assignment")}
                       </div>
                       <CheckCircle2 size={24} className="text-blue-500" strokeWidth={2.5} />
                     </div>
@@ -295,7 +298,7 @@ export default function AssignmentsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-50 inline-block px-2 py-1 border-2 border-orange-300 rounded-md">
-                      Project {a.project.id}
+                      {a.courseTopic ? a.courseTopic.course.title : (a.project ? `Project ${a.project.id}` : "Assignment")}
                     </div>
                     <Clock size={20} className="text-orange-400" strokeWidth={2.5} />
                   </div>

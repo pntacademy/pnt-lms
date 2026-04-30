@@ -62,6 +62,7 @@ model CourseTopic {
   updatedAt   DateTime @updatedAt
 
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  assignments Assignment[]
 }
 
 model Enrollment {
@@ -93,16 +94,19 @@ model Project {
 }
 
 model Assignment {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  dueDate     DateTime?
-  projectId   Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  dueDate       DateTime?
+  projectId     Int?     // Legacy: links to fixed Project catalog
+  courseTopicId String?  // New: links to a specific CourseTopic
+  courseId      String?  // Denormalized for easy querying by course
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  submissions AssignmentSubmission[]
+  project       Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  courseTopic   CourseTopic? @relation(fields: [courseTopicId], references: [id], onDelete: Cascade)
+  submissions   AssignmentSubmission[]
 }
 
 enum SubmissionStatus {
