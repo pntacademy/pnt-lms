@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
-// Fetch all courses with enrollment + attendance counts
+// Fetch all courses with enrollment + attendance + topic counts
 export async function getAllCourses() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
@@ -13,13 +13,14 @@ export async function getAllCourses() {
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { enrollments: true, attendances: true },
+        select: { enrollments: true, attendances: true, topics: true },
       },
       enrollments: {
         include: {
           user: { select: { id: true, name: true, studentId: true } },
         },
       },
+      topics: { orderBy: { order: "asc" } },
     },
   });
 
@@ -88,4 +89,39 @@ export async function getAllStudentsForEnroll() {
     select: { id: true, name: true, studentId: true },
     orderBy: { name: "asc" },
   });
+}
+
+// Add a topic to a course
+export async function addCourseTopic(courseId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const title = (formData.get("title") as string)?.trim();
+  const description = (formData.get("description") as string)?.trim() || null;
+  const videoUrl = (formData.get("videoUrl") as string)?.trim() || null;
+  const duration = (formData.get("duration") as string)?.trim() || null;
+
+  if (!title) throw new Error("Topic title is required");
+
+  // Get the current max order to append at end
+  const lastTopic = await prisma.courseTopic.findFirst({
+    where: { courseId },
+    orderBy: { order: "desc" },
+  });
+  const order = (lastTopic?.order ?? -1) + 1;
+
+  await prisma.courseTopic.create({
+    data: { courseId, title, description, videoUrl, duration, order },
+  });
+
+  revalidatePath("/dashboard/admin/courses");
+}
+
+// Delete a topic
+export async function deleteCourseTopic(topicId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  await prisma.courseTopic.delete({ where: { id: topicId } });
+  revalidatePath("/dashboard/admin/courses");
 }
