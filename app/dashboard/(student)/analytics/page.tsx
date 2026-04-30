@@ -4,10 +4,17 @@ import prisma from "@/lib/prisma";
 import { BarChart, BookOpen, CheckCircle2, ClipboardCheck, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { DownloadReportBtn } from "@/components/ui/DownloadReportBtn";
 
 export default async function AnalyticsPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
+
+  // Fetch user details for report card
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, studentId: true }
+  });
 
   // Fetch all enrollments for the student
   const enrollments = await prisma.enrollment.findMany({
@@ -99,6 +106,16 @@ export default async function AnalyticsPage() {
             Your performance across all enrolled courses
           </p>
         </div>
+        
+        {courseAnalytics.length > 0 && (
+          <DownloadReportBtn 
+            studentName={user?.name || "Student"} 
+            studentId={user?.studentId}
+            overallGrade={overallGrade}
+            overallAttendance={overallAttendance}
+            courseAnalytics={courseAnalytics}
+          />
+        )}
       </header>
 
       {/* Aggregate Overview */}
