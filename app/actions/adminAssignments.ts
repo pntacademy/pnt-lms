@@ -12,7 +12,17 @@ export async function getAllAssignments() {
   if (!session?.user || (role !== "ADMIN" && role !== "TEACHER")) return { error: "Unauthorized" };
 
   try {
+    let whereClause = {};
+    if (role === "TEACHER") {
+      const teacherCourses = await prisma.course.findMany({
+        where: { teacherId: session.user.id },
+        select: { id: true },
+      });
+      whereClause = { courseId: { in: teacherCourses.map(c => c.id) } };
+    }
+
     const assignments = await prisma.assignment.findMany({
+      where: whereClause,
       include: {
         project: { select: { id: true, title: true } },
         courseTopic: {
@@ -36,8 +46,10 @@ export async function getCoursesWithTopics() {
   const session = await auth();
   if (!session?.user) return { error: "Unauthorized" };
 
+  const role = (session?.user as any)?.role;
   try {
     const courses = await prisma.course.findMany({
+      where: role === "TEACHER" ? { teacherId: session.user.id } : undefined,
       select: {
         id: true,
         title: true,
@@ -108,7 +120,17 @@ export async function getAllSubmissions() {
   }
 
   try {
+    let whereClause = {};
+    if (role === "TEACHER") {
+      const teacherCourses = await prisma.course.findMany({
+        where: { teacherId: session.user.id },
+        select: { id: true },
+      });
+      whereClause = { assignment: { courseId: { in: teacherCourses.map(c => c.id) } } };
+    }
+
     const submissions = await prisma.assignmentSubmission.findMany({
+      where: whereClause,
       include: {
         user: {
           select: {

@@ -8,8 +8,11 @@ import { revalidatePath } from "next/cache";
 export async function getAllCourses() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
+  
+  const role = (session?.user as any)?.role;
 
   const courses = await prisma.course.findMany({
+    where: role === "TEACHER" ? { teacherId: session.user.id } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
@@ -21,6 +24,7 @@ export async function getAllCourses() {
         },
       },
       topics: { orderBy: { order: "asc" } },
+      teacher: { select: { id: true, name: true, email: true } },
     },
   });
 
@@ -36,11 +40,12 @@ export async function createCourse(formData: FormData) {
   const description = (formData.get("description") as string)?.trim() || null;
   const isInternship = formData.get("isInternship") === "true";
   const driveLink = (formData.get("driveLink") as string)?.trim() || null;
+  const teacherId = (formData.get("teacherId") as string)?.trim() || null;
 
   if (!title) throw new Error("Course title is required");
 
   const course = await prisma.course.create({
-    data: { title, description, isInternship, driveLink },
+    data: { title, description, isInternship, driveLink, teacherId },
   });
 
   revalidatePath("/dashboard/admin/courses");
@@ -87,6 +92,18 @@ export async function getAllStudentsForEnroll() {
   return prisma.user.findMany({
     where: { role: "STUDENT" },
     select: { id: true, name: true, studentId: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+// Get all teachers (for course assignment)
+export async function getAllTeachers() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return prisma.user.findMany({
+    where: { role: "TEACHER" },
+    select: { id: true, name: true, email: true },
     orderBy: { name: "asc" },
   });
 }

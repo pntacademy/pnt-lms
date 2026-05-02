@@ -1,55 +1,105 @@
 "use client";
 
-import { Calendar as CalendarIcon, Info } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Calendar as CalendarIcon, Clock, Users, BookOpen, AlertCircle } from "lucide-react";
+import { getEvents } from "@/app/actions/calendar";
+
+type Event = Awaited<ReturnType<typeof getEvents>>[0];
 
 export default function CalendarPage() {
-  return (
-    <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
-          <CalendarIcon size={36} className="text-red-500" strokeWidth={2.5} />
-          Academy Calendar
-        </h1>
-        <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
-          Upcoming classes, deadlines, and events
-        </p>
-      </header>
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-      <div className="bg-yellow-50 border-4 border-orange-200 rounded-xl p-4 mb-8 flex items-start gap-4">
-        <Info className="text-[#d4a017] shrink-0 mt-0.5" size={24} />
+  useEffect(() => {
+    async function load() {
+      try {
+        const e = await getEvents();
+        setEvents(e);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  return (
+    <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+      <header className="mb-8 flex items-center gap-3">
+        <div className="w-14 h-14 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-center">
+          <CalendarIcon size={28} className="text-red-500" strokeWidth={2.5} />
+        </div>
         <div>
-          <h3 className="font-black text-slate-800 uppercase text-sm mb-1">Google Calendar Integration</h3>
-          <p className="text-sm font-medium text-slate-700">
-            This calendar is synced directly from the Academy&apos;s free Google Calendar. Any events added by instructors will instantly appear here for all students.
+          <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight">
+            Schedule
+          </h1>
+          <p className="mt-1 text-sm font-bold text-slate-500 uppercase tracking-widest">
+            Upcoming classes, deadlines, and events
           </p>
         </div>
-      </div>
+      </header>
 
-      <Card className="border border-slate-200 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
-        <CardHeader className="border-b border-slate-200 bg-slate-100 flex flex-row items-center justify-between">
-          <CardTitle className="text-xl font-black uppercase text-slate-800">Schedule</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] bg-slate-100 relative">
-            {/* 
-              To make this work with a REAL Google Calendar:
-              1. Go to Google Calendar -> Settings -> "Integrate Calendar"
-              2. Make the calendar "Public"
-              3. Copy the "Embed code" iframe src link and replace the src below.
-            */}
-            <iframe
-              src="https://calendar.google.com/calendar/embed?src=en.indian%23holiday%40group.v.calendar.google.com&ctz=Asia%2FKolkata&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0"
-              style={{ border: 0 }}
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              scrolling="no"
-              className="absolute inset-0 w-full h-full"
-            ></iframe>
-          </div>
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <div className="p-16 text-center text-slate-400 font-bold uppercase tracking-widest text-sm animate-pulse">Loading events...</div>
+      ) : events.length === 0 ? (
+        <div className="p-16 text-center flex flex-col items-center gap-3 bg-white border border-slate-200 rounded-xl shadow-sm">
+          <CalendarIcon size={40} className="text-slate-200" />
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">
+            No upcoming events scheduled
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {events.map(evt => {
+            const date = new Date(evt.date);
+            return (
+              <div key={evt.id} className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col">
+                <div className={`h-2 w-full ${evt.type === 'LIVE_CLASS' ? "bg-gradient-to-r from-red-400 to-rose-500" : evt.type === 'DEADLINE' ? "bg-gradient-to-r from-orange-400 to-amber-500" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`} />
+                <div className="p-5 flex-1 flex flex-col">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div>
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 inline-block ${
+                        evt.type === 'LIVE_CLASS' ? "bg-red-50 text-red-600" : evt.type === 'DEADLINE' ? "bg-orange-50 text-orange-600" : "bg-indigo-50 text-indigo-600"
+                      }`}>{evt.type.replace("_", " ")}</span>
+                      <h3 className="font-black text-slate-800 leading-tight">{evt.title}</h3>
+                    </div>
+                  </div>
+
+                  {evt.description && <p className="text-xs text-slate-500 mb-4 line-clamp-2">{evt.description}</p>}
+
+                  <div className="mt-auto space-y-2 text-xs font-bold text-slate-500">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon size={14} className="text-slate-400" />
+                      {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    {evt.duration && (
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="text-slate-400" />
+                        {evt.duration} minutes
+                      </div>
+                    )}
+                    {evt.course ? (
+                      <div className="flex items-center gap-2 text-indigo-600">
+                        <BookOpen size={14} className="text-indigo-400" />
+                        {evt.course.title}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-emerald-600">
+                        <Users size={14} className="text-emerald-400" />
+                        General Academy Event
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                      <span className="text-[10px] uppercase text-slate-400 tracking-wider">Instructor: {evt.teacher.name}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

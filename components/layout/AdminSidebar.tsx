@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +12,7 @@ import {
   FileCheck2,
   LogOut,
   ArrowLeftCircle,
+  CalendarDays,
 } from "lucide-react";
 
 const adminLinks = [
@@ -20,11 +21,14 @@ const adminLinks = [
   { href: "/dashboard/admin/attendance", label: "Mark Attendance", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade Submissions", icon: FileCheck2 },
   { href: "/dashboard/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+  const role = (session?.user as any)?.role;
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
@@ -78,9 +82,10 @@ export function AdminSidebar() {
 
       {/* Main Navigation */}
       <nav className="flex-1 space-y-2">
-        {adminLinks.map((link) => (
-          <NavLink key={link.href} {...link} />
-        ))}
+        {adminLinks.map((link) => {
+          if (role === "TEACHER" && (link.label === "Students" || link.label === "Courses")) return null;
+          return <NavLink key={link.href} {...link} />;
+        })}
       </nav>
 
       {/* Bottom */}

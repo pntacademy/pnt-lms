@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -10,6 +10,7 @@ import {
   BookOpen,
   FileCheck2,
   LogOut,
+  CalendarDays,
 } from "lucide-react";
 
 const links = [
@@ -18,14 +19,19 @@ const links = [
   { href: "/dashboard/admin/attendance", label: "Attend", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade", icon: FileCheck2 },
   { href: "/dashboard/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 
 export function AdminMobileNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const role = (session?.user as any)?.role;
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-50 px-2 py-2 flex justify-around items-center">
       {links.map((link) => {
+        if (role === "TEACHER" && (link.label === "Students" || link.label === "Courses")) return null;
+        
         const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
         const Icon = link.icon;
         return (

@@ -14,11 +14,13 @@ import {
 
 type Course = Awaited<ReturnType<typeof getAllCourses>>[0];
 type Student = Awaited<ReturnType<typeof getAllStudentsForEnroll>>[0];
+type Teacher = Awaited<ReturnType<typeof import("@/app/actions/courses").getAllTeachers>>[0];
 type DrawerTab = "topics" | "students";
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -31,9 +33,14 @@ export default function AdminCoursesPage() {
 
   const load = async () => {
     setIsLoading(true);
-    const [c, s] = await Promise.all([getAllCourses(), getAllStudentsForEnroll()]);
+    const [c, s, t] = await Promise.all([
+      getAllCourses(), 
+      getAllStudentsForEnroll(),
+      import("@/app/actions/courses").then(m => m.getAllTeachers())
+    ]);
     setCourses(c);
     setStudents(s);
+    setTeachers(t);
     setIsLoading(false);
   };
 
@@ -180,6 +187,12 @@ export default function AdminCoursesPage() {
 
                 {course.description && <p className="text-xs text-slate-500 mb-3 line-clamp-2">{course.description}</p>}
 
+                {course.teacher && (
+                  <p className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md inline-block mb-3">
+                    👨‍🏫 {course.teacher.name}
+                  </p>
+                )}
+
                 <div className="flex items-center gap-3 text-xs font-bold text-slate-500 mb-4 flex-wrap">
                   <span className="flex items-center gap-1"><List size={13} /> {course._count.topics} topics</span>
                   <span className="flex items-center gap-1"><Users size={13} /> {course._count.enrollments} students</span>
@@ -229,6 +242,15 @@ export default function AdminCoursesPage() {
               <div className="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                 <input type="checkbox" id="isInternship" name="isInternship" value="true" className="w-4 h-4 accent-emerald-600" />
                 <label htmlFor="isInternship" className="text-sm font-bold text-emerald-700">Mark as Internship Program</label>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Assign Teacher</label>
+                <select name="teacherId" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+                  <option value="">No Teacher Assigned</option>
+                  {teachers.map(t => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.email})</option>
+                  ))}
+                </select>
               </div>
               <button type="submit" disabled={isPending}
                 className="w-full h-11 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-xl font-black uppercase text-sm tracking-wider shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50">

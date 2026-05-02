@@ -8,8 +8,22 @@ export async function getAllStudents() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
+  const role = (session?.user as any)?.role;
+  
+  let whereClause: any = { role: "STUDENT" };
+  if (role === "TEACHER") {
+    const teacherCourses = await prisma.course.findMany({
+      where: { teacherId: session.user.id },
+      select: { id: true }
+    });
+    whereClause = {
+      role: "STUDENT",
+      enrollments: { some: { courseId: { in: teacherCourses.map(c => c.id) } } }
+    };
+  }
+
   const students = await prisma.user.findMany({
-    where: { role: "STUDENT" },
+    where: whereClause,
     orderBy: { createdAt: "desc" },
     include: {
       enrollments: { include: { course: { select: { title: true } } } },
@@ -99,7 +113,8 @@ export async function registerStudent(formData: FormData) {
 
 export async function deleteStudent(studentDbId: string) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  const role = (session?.user as any)?.role;
+  if (!session?.user || role !== "ADMIN") throw new Error("Unauthorized");
 
   await prisma.user.delete({ where: { id: studentDbId } });
   revalidatePath("/dashboard/admin/students");

@@ -9,8 +9,10 @@ import { AttendanceStatus } from "@prisma/client";
 export async function getCourses() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
+  const role = (session?.user as any)?.role;
   
   return await prisma.course.findMany({
+    where: role === "TEACHER" ? { teacherId: session.user.id } : undefined,
     select: { id: true, title: true },
     orderBy: { createdAt: "desc" }
   });

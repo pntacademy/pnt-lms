@@ -33,6 +33,10 @@ model User {
   enrollments   Enrollment[]
   submissions   AssignmentSubmission[]
   attendances   Attendance[]
+  
+  // Teacher relations
+  taughtCourses Course[] @relation("TeacherCourses")
+  eventsCreated Event[]  @relation("TeacherEvents")
 }
 
 model Course {
@@ -42,12 +46,15 @@ model Course {
   thumbnailUrl String?
   isInternship Boolean @default(false)
   driveLink   String?  // Secure Google Drive Link for Internships
+  teacherId   String?  // User ID of the teacher assigned to this course
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  teacher     User?    @relation("TeacherCourses", fields: [teacherId], references: [id])
   enrollments Enrollment[]
   attendances Attendance[]
   topics      CourseTopic[]
+  events      Event[]
 }
 
 model CourseTopic {
@@ -153,4 +160,26 @@ model Attendance {
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId, date])
+}
+
+enum EventType {
+  LIVE_CLASS
+  DEADLINE
+  GENERAL
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  duration    Int?     // Duration in minutes
+  type        EventType @default(GENERAL)
+  courseId    String?
+  teacherId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  teacher     User     @relation("TeacherEvents", fields: [teacherId], references: [id], onDelete: Cascade)
 }
