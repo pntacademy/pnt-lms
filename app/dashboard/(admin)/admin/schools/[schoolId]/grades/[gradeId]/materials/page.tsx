@@ -70,7 +70,7 @@ export default async function GradeMaterialsPage({ params }: { params: Promise<{
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {grade.materials.map((material) => (
+                {grade.materials.map((material: any) => (
                   <div key={material.id} className="p-6 flex flex-col sm:flex-row gap-6 hover:bg-slate-50 transition-colors">
                     <div className="flex-1 space-y-3">
                       <div>

@@ -192,7 +192,7 @@ export default async function SchoolPortalPage() {
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {schoolGrade.materials.map((material) => (
+            {schoolGrade.materials.map((material: any) => (
               <div key={material.id} className="p-8 hover:bg-slate-50 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="space-y-3 flex-1">
