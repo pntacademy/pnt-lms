@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, UserCircle, User, Lock } from "lucide-react";
+import { ArrowLeft, UserCircle, User, Lock, Eye, EyeOff, Copy, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -30,6 +30,14 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(password);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,14 +184,34 @@ export default function AdminLoginPage() {
                       <Input
                         id="password"
                         name="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10 h-12 bg-white border border-slate-300 text-slate-800 placeholder:text-slate-400 rounded-lg shadow-none font-medium text-sm focus-visible:ring-0 focus-visible:border-slate-200 focus-visible:border-2 transition-all"
+                        className="pl-10 pr-20 h-12 bg-white border border-slate-300 text-slate-800 placeholder:text-slate-400 rounded-lg shadow-none font-medium text-sm focus-visible:ring-0 focus-visible:border-slate-200 focus-visible:border-2 transition-all"
                         placeholder="••••••••"
                       />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+                        {password && (
+                          <button
+                            type="button"
+                            onClick={handleCopy}
+                            className="text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+                            title="Copy Password"
+                          >
+                            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+                          title={showPassword ? "Hide Password" : "Show Password"}
+                        >
+                          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 

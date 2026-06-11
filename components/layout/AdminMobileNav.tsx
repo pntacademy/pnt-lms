@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -22,10 +22,8 @@ const links = [
   { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 
-export function AdminMobileNav() {
+export function AdminMobileNav({ role }: { role?: string }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const role = (session?.user as any)?.role;
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-50 px-2 py-2 flex justify-around items-center">

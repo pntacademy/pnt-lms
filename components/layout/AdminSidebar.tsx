@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -24,11 +24,9 @@ const adminLinks = [
   { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ role }: { role?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
-  const role = (session?.user as any)?.role;
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
