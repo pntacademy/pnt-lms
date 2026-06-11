@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 export async function createSchool(data: { name: string; coordinatorName: string; location: string }) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
 
   const school = await prisma.school.create({
     data,
@@ -18,7 +18,7 @@ export async function createSchool(data: { name: string; coordinatorName: string
 
 export async function createSchoolGrade(data: { schoolId: string; gradeName: string }) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
 
   const grade = await prisma.schoolGrade.create({
     data,
@@ -34,7 +34,7 @@ export async function updateSchoolGradeDetails(
   data: { videoUrl?: string; driveLink?: string; notes?: string; assignmentLink?: string; assignmentFileUrl?: string }
 ) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
 
   await prisma.schoolGrade.update({
     where: { id: gradeId },
@@ -51,7 +51,7 @@ export async function bulkUploadStudents(
   studentsData: Array<{ name: string; grade: string; email?: string; contactNumber?: string }>
 ) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
 
   const generatedUsers = [];
 
@@ -103,7 +103,7 @@ export async function bulkUploadStudents(
 
 export async function deleteStudent(studentId: string, schoolId: string, gradeId: string) {
   const session = await auth();
-  if (session?.user?.role !== "ADMIN") throw new Error("Unauthorized");
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
 
   await prisma.user.delete({
     where: { id: studentId }
