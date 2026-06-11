@@ -72,7 +72,7 @@ export function CreateMaterialForm({ gradeId }: { gradeId: string }) {
       
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5" required>
+          <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
             <Heading className="w-4 h-4 text-orange-500" /> Title (e.g., Session 1, Oct 12 Notes) *
           </label>
           <input 
