@@ -18,7 +18,7 @@ export default async function SchoolPortalPage() {
   }
 
   // Fetch the full user to check school association
-  const user = await prisma.user.findUnique({
+  const user = await (prisma.user as any).findUnique({
     where: { id: session.user.id },
     include: {
       school: true,

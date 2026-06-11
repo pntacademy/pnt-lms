@@ -17,7 +17,7 @@ export async function createGradeMaterial(data: {
     throw new Error("Unauthorized");
   }
 
-  const material = await prisma.gradeMaterial.create({
+  const material = await (prisma as any).gradeMaterial.create({
     data,
   });
 
@@ -41,7 +41,7 @@ export async function deleteGradeMaterial(materialId: string, gradeId: string, s
     throw new Error("Unauthorized");
   }
 
-  await prisma.gradeMaterial.delete({
+  await (prisma as any).gradeMaterial.delete({
     where: { id: materialId },
   });
 

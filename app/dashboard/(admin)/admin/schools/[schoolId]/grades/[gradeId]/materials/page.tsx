@@ -15,7 +15,7 @@ export default async function GradeMaterialsPage({ params }: { params: Promise<{
 
   const resolvedParams = await params;
 
-  const grade = await prisma.schoolGrade.findUnique({
+  const grade = await (prisma.schoolGrade as any).findUnique({
     where: { id: resolvedParams.gradeId },
     include: {
       school: true,
