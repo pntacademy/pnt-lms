@@ -22,7 +22,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800 overflow-hidden relative font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800 overflow-x-hidden relative font-sans">
       
       {/* Animated Colorful Background */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-red-400 to-rose-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
@@ -66,7 +66,7 @@ export default function LandingPage() {
         </div>
         <div className="hidden md:flex items-center gap-6 font-bold uppercase text-sm tracking-wider">
           <Link href="#programs" className="hover:text-red-500 hover:underline underline-offset-4">Programs</Link>
-          <Link href="#about" className="hover:text-red-500 hover:underline underline-offset-4">About</Link>
+          <Link href="https://pntrobotics.com" target="_blank" rel="noopener noreferrer" className="hover:text-red-500 hover:underline underline-offset-4">About</Link>
           <Link href="/login" className="bg-gradient-to-br from-orange-300 to-amber-400 px-5 py-2.5 border border-slate-200 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
             Student Login
           </Link>
