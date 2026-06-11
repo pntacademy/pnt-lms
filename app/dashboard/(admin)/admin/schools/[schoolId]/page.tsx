@@ -8,7 +8,7 @@ import { CreateGradeModal } from "./CreateGradeModal";
 export default async function SchoolDetailsPage({ params }: { params: Promise<{ schoolId: string }> }) {
   const session = await auth();
 
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || (session.user as any).role !== "ADMIN") {
     redirect("/admin-login");
   }
 

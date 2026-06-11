@@ -10,7 +10,7 @@ import { DeleteStudentButton } from "./DeleteStudentButton";
 export default async function GradeDetailsPage({ params }: { params: Promise<{ schoolId: string; gradeId: string }> }) {
   const session = await auth();
 
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || (session.user as any).role !== "ADMIN") {
     redirect("/admin-login");
   }
 
