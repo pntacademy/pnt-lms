@@ -11,10 +11,12 @@ import {
   FileCheck2,
   LogOut,
   CalendarDays,
+  Building,
 } from "lucide-react";
 
 const links = [
   { href: "/dashboard/admin", label: "Home", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/admin/schools", label: "Schools", icon: Building },
   { href: "/dashboard/admin/students", label: "Students", icon: Users },
   { href: "/dashboard/admin/attendance", label: "Attend", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade", icon: FileCheck2 },

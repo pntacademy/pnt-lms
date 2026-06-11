@@ -37,3 +37,35 @@ export async function getDownloadPresignedUrl(objectKey: string) {
     return { error: "Failed to generate download URL" };
   }
 }
+
+export async function getStudentDownloadPresignedUrl(objectKey: string) {
+  // 1. Verify the user is authenticated
+  const session = await auth();
+  
+  if (!session?.user) {
+    return { error: "Unauthorized" };
+  }
+
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  if (!bucketName) {
+    return { error: "Cloudflare R2 Bucket Name is not configured" };
+  }
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: objectKey,
+    });
+
+    // Generate the presigned URL for GET (expires in 15 minutes)
+    const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 900 });
+
+    return { 
+        success: true, 
+        presignedUrl 
+    };
+  } catch (error) {
+    console.error("Error generating presigned download URL:", error);
+    return { error: "Failed to generate download URL" };
+  }
+}

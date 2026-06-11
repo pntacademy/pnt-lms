@@ -37,6 +37,41 @@ model User {
   // Teacher relations
   taughtCourses Course[] @relation("TeacherCourses")
   eventsCreated Event[]  @relation("TeacherEvents")
+
+  // School relations
+  schoolId      String?
+  schoolGradeId String?
+  school        School?      @relation(fields: [schoolId], references: [id])
+  schoolGrade   SchoolGrade? @relation(fields: [schoolGradeId], references: [id])
+}
+
+model School {
+  id              String   @id @default(cuid())
+  name            String
+  coordinatorName String?
+  location        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  grades          SchoolGrade[]
+  students        User[]
+}
+
+model SchoolGrade {
+  id             String   @id @default(cuid())
+  schoolId       String
+  gradeName      String   // e.g. "Grade 10" or "Standard 12"
+  videoUrl       String?
+  driveLink      String?
+  notes          String?  // Text notes
+  assignmentLink String?  // External assignment link like Google Form
+  assignmentFileUrl String? // Uploaded assignment file (PDF/Doc)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  school         School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  students       User[]
 }
 
 model Course {

@@ -14,10 +14,12 @@ import {
   User,
   LogOut,
   BarChart,
+  Building,
 } from "lucide-react";
 
 const mainLinks = [
   { href: "/dashboard", label: "Dashboard", icon: Home, exact: true },
+  { href: "/dashboard/school", label: "My School", icon: Building },
   { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
   { href: "/dashboard/assignments", label: "Assignments", icon: FileText },
   { href: "/dashboard/attendance", label: "Attendance", icon: ClipboardCheck },

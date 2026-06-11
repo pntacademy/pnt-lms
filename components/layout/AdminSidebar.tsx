@@ -13,10 +13,12 @@ import {
   LogOut,
   ArrowLeftCircle,
   CalendarDays,
+  Building,
 } from "lucide-react";
 
 const adminLinks = [
   { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/admin/schools", label: "Schools", icon: Building },
   { href: "/dashboard/admin/students", label: "Students", icon: Users },
   { href: "/dashboard/admin/attendance", label: "Mark Attendance", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade Submissions", icon: FileCheck2 },
