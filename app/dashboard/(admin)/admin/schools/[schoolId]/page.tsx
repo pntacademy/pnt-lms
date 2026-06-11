@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { ArrowLeft, Building, Users, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { CreateGradeModal } from "./CreateGradeModal";
+import { DeleteGradeButton } from "./DeleteGradeButton";
 
 export default async function SchoolDetailsPage({ params }: { params: Promise<{ schoolId: string }> }) {
   const session = await auth();
@@ -81,13 +82,15 @@ export default async function SchoolDetailsPage({ params }: { params: Promise<{ 
                     <p className="text-sm text-slate-500">{grade._count.students} Students enrolled</p>
                   </div>
                 </div>
-                
-                <Link 
-                  href={`/dashboard/admin/schools/${school.id}/grades/${grade.id}`}
-                  className="px-4 py-2 bg-white border border-slate-200 hover:border-purple-300 hover:text-purple-600 rounded-xl text-sm font-semibold shadow-sm transition-all"
-                >
-                  Manage Grade
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link 
+                    href={`/dashboard/admin/schools/${school.id}/grades/${grade.id}`}
+                    className="px-4 py-2 bg-white border border-slate-200 hover:border-purple-300 hover:text-purple-600 rounded-xl text-sm font-semibold shadow-sm transition-all"
+                  >
+                    Manage Grade
+                  </Link>
+                  <DeleteGradeButton gradeId={grade.id} schoolId={school.id} gradeName={grade.gradeName} />
+                </div>
               </div>
             ))}
           </div>

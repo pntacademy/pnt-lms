@@ -111,3 +111,24 @@ export async function deleteStudent(studentId: string, schoolId: string, gradeId
 
   revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${gradeId}`);
 }
+
+export async function deleteSchoolGrade(gradeId: string, schoolId: string) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  await prisma.schoolGrade.delete({
+    where: { id: gradeId }
+  });
+
+  revalidatePath(`/dashboard/admin/schools/${schoolId}`);
+}
+export async function deleteSchool(schoolId: string) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  await prisma.school.delete({
+    where: { id: schoolId }
+  });
+
+  revalidatePath("/dashboard/admin/schools");
+}

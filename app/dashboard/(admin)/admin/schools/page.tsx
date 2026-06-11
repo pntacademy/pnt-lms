@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { Building, MapPin, User, Plus, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { CreateSchoolModal } from "./CreateSchoolModal";
+import { DeleteSchoolButton } from "./DeleteSchoolButton";
 
 export const metadata = {
   title: "School Management | PNT Academy Admin",
@@ -58,9 +59,12 @@ export default async function AdminSchoolsPage() {
                 <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Building className="w-6 h-6" />
                 </div>
-                <div className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  {school._count.students} Students
+                <div className="flex items-center gap-2">
+                  <div className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                    <GraduationCap className="w-3.5 h-3.5" />
+                    {school._count.students} Students
+                  </div>
+                  <DeleteSchoolButton schoolId={school.id} schoolName={school.name} />
                 </div>
               </div>
               
