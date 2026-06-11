@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { ArrowLeft, Users, GraduationCap } from "lucide-react";
+import { ArrowLeft, Users, GraduationCap, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { ManageGradeForm } from "./ManageGradeForm";
 import { BulkUploadStudents } from "./BulkUploadStudents";
@@ -33,21 +33,31 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link 
-          href={`/dashboard/admin/schools/${resolvedParams.schoolId}`}
-          className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
-        >
-          <ArrowLeft className="w-5 h-5 text-slate-600" />
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
-            {grade.school.name} <span className="text-slate-300">/</span> {grade.gradeName}
-          </h1>
-          <p className="text-slate-500 mt-1 flex items-center gap-4">
-            <span className="flex items-center gap-1.5"><Users className="w-4 h-4" /> {grade.students.length} Total Students Configured</span>
-          </p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link 
+            href={`/dashboard/admin/schools/${grade.schoolId}`} 
+            className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+              Manage Grade
+            </h1>
+            <p className="text-slate-500 mt-1 flex items-center gap-2">
+              <span className="font-medium text-slate-700">{grade.gradeName}</span> • <span>{grade.school.name}</span>
+            </p>
+          </div>
         </div>
+
+        <Link 
+          href={`/dashboard/admin/schools/${grade.schoolId}/grades/${grade.id}/materials`}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-all"
+        >
+          <BookOpen className="w-5 h-5" />
+          Daily Materials
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
