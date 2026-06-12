@@ -7,6 +7,7 @@ import Link from "next/link";
 import { BulkUploadStudents } from "./BulkUploadStudents";
 import { DeleteStudentButton } from "./DeleteStudentButton";
 import { PasswordVisibilityToggle } from "./PasswordVisibilityToggle";
+import { DownloadRosterButton } from "./DownloadRosterButton";
 
 export default async function GradeDetailsPage({ params }: { params: Promise<{ schoolId: string; gradeId: string }> }) {
   const session = await auth();
@@ -74,9 +75,12 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-500" /> Enrolled Students
               </h2>
-              <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                {grade.students.length} Total
-              </span>
+              <div className="flex items-center gap-2">
+                <DownloadRosterButton students={grade.students} gradeName={grade.gradeName} />
+                <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  {grade.students.length} Total
+                </span>
+              </div>
             </div>
             
             <div className="flex-1 overflow-y-auto p-2">
