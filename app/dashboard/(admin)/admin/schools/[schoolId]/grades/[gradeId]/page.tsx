@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { ArrowLeft, Users, GraduationCap, BookOpen } from "lucide-react";
 import Link from "next/link";
-import { ManageGradeForm } from "./ManageGradeForm";
+
 import { BulkUploadStudents } from "./BulkUploadStudents";
 import { DeleteStudentButton } from "./DeleteStudentButton";
 
@@ -60,28 +60,12 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Grade Content Management */}
-        <div className="space-y-8">
-          <ManageGradeForm 
-            gradeId={grade.id} 
-            schoolId={grade.schoolId} 
-            initialData={{
-              videoUrl: grade.videoUrl,
-              notes: grade.notes,
-              assignmentLink: grade.assignmentLink,
-              assignmentFileUrl: grade.assignmentFileUrl
-            }} 
-          />
-        </div>
-
-        {/* Right Column: Student Management & Upload */}
-        <div className="space-y-8">
-          <BulkUploadStudents 
-            schoolId={grade.schoolId} 
-            gradeId={grade.id} 
-            gradeName={grade.gradeName} 
-          />
+      <div className="space-y-8">
+        <BulkUploadStudents 
+          schoolId={grade.schoolId} 
+          gradeId={grade.id} 
+          gradeName={grade.gradeName} 
+        />
 
           {/* Student List */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
@@ -109,8 +93,8 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{student.studentId}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
-                          Password Hidden
+                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md font-mono">
+                          {student.plainPassword || 'Password Hidden'}
                         </span>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <DeleteStudentButton 

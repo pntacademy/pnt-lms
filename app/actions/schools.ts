@@ -56,6 +56,19 @@ export async function bulkUploadStudents(
   const generatedUsers = [];
 
   for (const student of studentsData) {
+    // Prevent duplicate students with the exact same name in the same grade
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        schoolId: schoolId,
+        schoolGradeId: gradeId,
+        name: student.name
+      }
+    });
+
+    if (existingUser) {
+      continue; // Skip this student since they already exist
+    }
+
     // Generate a random student ID e.g. PNT-SCH-XXXX
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const studentId = `PNT-SCH-${randomNum}`;
@@ -67,9 +80,6 @@ export async function bulkUploadStudents(
       password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     
-    // Create the user
-    // In a real production app we would hash the password using bcrypt here
-    // However, since we need to return the plain password in the roster, we'll store it hashed and return plain.
     const bcrypt = require("bcryptjs");
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -80,6 +90,7 @@ export async function bulkUploadStudents(
         email: student.email || null,
         contactNumber: student.contactNumber || null,
         passwordHash: passwordHash,
+        plainPassword: password, // Store plain text for admin visibility
         role: "STUDENT",
         schoolId: schoolId,
         schoolGradeId: gradeId,
@@ -90,7 +101,7 @@ export async function bulkUploadStudents(
     generatedUsers.push({
       Name: student.name,
       StudentId: studentId,
-      Password: password, // Plain text returned only ONCE for the roster download
+      Password: password,
       Email: student.email || "N/A",
       Grade: student.grade
     });

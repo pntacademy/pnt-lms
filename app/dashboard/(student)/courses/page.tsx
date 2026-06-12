@@ -24,6 +24,14 @@ export default async function CoursesPage() {
     orderBy: { createdAt: "asc" },
   });
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      school: true,
+      schoolGrade: true
+    }
+  });
+
   const courses = enrollments.map((e) => e.course);
 
   return (
@@ -39,7 +47,7 @@ export default async function CoursesPage() {
         </p>
       </header>
 
-      {courses.length === 0 ? (
+      {courses.length === 0 && !user?.school ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
           <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center">
             <BookOpen size={36} className="text-slate-300" />
@@ -53,6 +61,32 @@ export default async function CoursesPage() {
         </div>
       ) : (
         <div className="space-y-4">
+          {user?.school && user?.schoolGrade && (
+            <Link href="/dashboard/student/school" className="block">
+              <div className="bg-white border border-indigo-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-all group">
+                <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 to-indigo-500" />
+                <div className="p-4 md:p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full inline-block mb-1.5 bg-indigo-50 text-indigo-600">
+                        Partner School
+                      </span>
+                      <h2 className="font-black text-base md:text-lg text-slate-800 leading-tight group-hover:text-indigo-600 transition-colors">
+                        {user.school.name}
+                      </h2>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {user.schoolGrade.gradeName} Portal — Daily Materials & Sessions
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 flex items-center gap-1 text-xs font-bold text-indigo-500 bg-indigo-50 px-3 py-1.5 rounded-xl group-hover:bg-indigo-100 transition-colors">
+                      Enter Portal <ChevronRight size={14} strokeWidth={3} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+
           {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
