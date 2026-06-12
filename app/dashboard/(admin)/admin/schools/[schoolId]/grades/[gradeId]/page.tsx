@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { BulkUploadStudents } from "./BulkUploadStudents";
 import { DeleteStudentButton } from "./DeleteStudentButton";
+import { PasswordVisibilityToggle } from "./PasswordVisibilityToggle";
 
 export default async function GradeDetailsPage({ params }: { params: Promise<{ schoolId: string; gradeId: string }> }) {
   const session = await auth();
@@ -93,9 +94,7 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{student.studentId}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md font-mono">
-                          {student.plainPassword || 'Password Hidden'}
-                        </span>
+                        <PasswordVisibilityToggle plainPassword={student.plainPassword} />
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <DeleteStudentButton 
                             studentId={student.id}

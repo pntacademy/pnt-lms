@@ -73,12 +73,10 @@ export async function bulkUploadStudents(
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const studentId = `PNT-SCH-${randomNum}`;
     
-    // Generate a secure 8-character password
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
-    let password = "";
-    for (let i = 0; i < 8; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    // Generate an easy-to-type, child-friendly password based on the first name
+    const baseName = student.name.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+    const randomNums = Math.floor(1000 + Math.random() * 9000);
+    const password = `${baseName}${randomNums}`;
     
     const bcrypt = require("bcryptjs");
     const passwordHash = await bcrypt.hash(password, 10);
