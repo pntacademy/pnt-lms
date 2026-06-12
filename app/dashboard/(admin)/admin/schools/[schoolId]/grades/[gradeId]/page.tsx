@@ -110,7 +110,6 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
                 </div>
               )}
             </div>
-          </div>
         </div>
       </div>
     </div>
