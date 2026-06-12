@@ -83,7 +83,7 @@ export async function bulkUploadStudents(
     const bcrypt = require("bcryptjs");
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
+    const newUser = await (prisma as any).user.create({
       data: {
         name: student.name,
         studentId: studentId,
