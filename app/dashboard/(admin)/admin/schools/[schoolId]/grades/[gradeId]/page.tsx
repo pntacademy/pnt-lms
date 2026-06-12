@@ -6,6 +6,8 @@ import Link from "next/link";
 
 import { BulkUploadStudents } from "./BulkUploadStudents";
 import { DeleteStudentButton } from "./DeleteStudentButton";
+import { PasswordVisibilityToggle } from "./PasswordVisibilityToggle";
+import { DownloadRosterButton } from "./DownloadRosterButton";
 
 export default async function GradeDetailsPage({ params }: { params: Promise<{ schoolId: string; gradeId: string }> }) {
   const session = await auth();
@@ -73,9 +75,12 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-indigo-500" /> Enrolled Students
               </h2>
-              <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                {grade.students.length} Total
-              </span>
+              <div className="flex items-center gap-2">
+                <DownloadRosterButton students={grade.students} gradeName={grade.gradeName} />
+                <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  {grade.students.length} Total
+                </span>
+              </div>
             </div>
             
             <div className="flex-1 overflow-y-auto p-2">
@@ -93,9 +98,7 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{student.studentId}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md font-mono">
-                          {student.plainPassword || 'Password Hidden'}
-                        </span>
+                        <PasswordVisibilityToggle plainPassword={(student as any).plainPassword} />
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <DeleteStudentButton 
                             studentId={student.id}
