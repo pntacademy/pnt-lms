@@ -94,7 +94,7 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{student.studentId}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <PasswordVisibilityToggle plainPassword={student.plainPassword} />
+                        <PasswordVisibilityToggle plainPassword={(student as any).plainPassword} />
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <DeleteStudentButton 
                             studentId={student.id}
