@@ -17,29 +17,50 @@ export default async function AdminSchoolsPage() {
     redirect("/admin-login");
   }
 
-  // Fetch all schools
-  const schools = await prisma.school.findMany({
-    include: {
-      grades: true,
-      _count: {
-        select: { students: true }
-      }
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  // Fetch all schools with graceful error handling for DB connection issues
+  let schools: any[] = [];
+  let dbError = false;
+  
+  try {
+    schools = await prisma.school.findMany({
+      include: {
+        grades: true,
+        _count: {
+          select: { students: true }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+  } catch (error) {
+    console.error("Database connection error fetching schools:", error);
+    dbError = true;
+  }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Partner Schools</h1>
-          <p className="text-slate-500 mt-1">Manage onboarded schools, specific grades, and bulk-upload students.</p>
+          <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
+            <Building size={36} className="text-indigo-600" strokeWidth={2.5} />
+            Partner Schools
+          </h1>
+          <p className="mt-1 text-sm font-bold text-slate-500 uppercase tracking-widest">Manage onboarded schools, specific grades, and bulk-upload students.</p>
         </div>
         
         <CreateSchoolModal />
       </div>
 
-      {schools.length === 0 ? (
+      {dbError ? (
+        <div className="bg-red-50 rounded-3xl border border-red-200 p-12 text-center flex flex-col items-center shadow-sm">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-6">
+            <Building className="w-10 h-10" />
+          </div>
+          <h3 className="text-2xl font-black text-red-900 uppercase tracking-tight">Database Connection Failed</h3>
+          <p className="text-red-700 mt-2 max-w-lg font-medium leading-relaxed">
+            We couldn't connect to the database right now. The server might be waking up or temporarily unreachable. Please refresh the page in a few seconds.
+          </p>
+        </div>
+      ) : schools.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center flex flex-col items-center">
           <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500 mb-4">
             <Building className="w-8 h-8" />

@@ -59,14 +59,14 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
 
   const downloadRoster = () => {
     if (!roster || roster.length === 0) return;
-    
+
     const doc = new jsPDF();
-    
+
     // Add a neat title
     doc.setFontSize(18);
     doc.setTextColor(33, 37, 41);
     doc.text(`Student Credentials Roster`, 14, 22);
-    
+
     doc.setFontSize(11);
     doc.setTextColor(100, 116, 139);
     doc.text(`Grade: ${gradeName}`, 14, 30);
@@ -100,7 +100,7 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
         <p className="text-slate-600 mb-6 max-w-md mx-auto">
           The student accounts have been created. **This is the ONLY time you can download the plain-text passwords.** Please download the roster now and share it with the school.
         </p>
-        <button 
+        <button
           onClick={downloadRoster}
           className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 mx-auto"
         >
@@ -121,15 +121,15 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
         Upload a CSV file containing the student details. Ensure your file has a header row with at least a <strong>Name</strong> column.
       </p>
 
-      <input 
-        type="file" 
+      <input
+        type="file"
         accept=".csv"
-        className="hidden" 
+        className="hidden"
         ref={fileInputRef}
         onChange={handleFileUpload}
       />
 
-      <button 
+      <button
         onClick={() => fileInputRef.current?.click()}
         disabled={isUploading}
         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2 mx-auto disabled:opacity-50"
