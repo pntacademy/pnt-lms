@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, JetBrains_Mono, Press_Start_2P } from "next/font/goo
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 const pixelFont = Press_Start_2P({
   weight: "400",
@@ -25,7 +25,6 @@ export const metadata: Metadata = {
   title: "PNT Academy LMS",
   description: "PNT Academy Learning Management System",
   manifest: "/manifest.json",
-  themeColor: "#1e293b",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -35,6 +34,10 @@ export const metadata: Metadata = {
     icon: "/logo.svg",
     apple: "/logo.svg",
   },
+};
+
+export const viewport = {
+  themeColor: "#1e293b",
 };
 
 export default function RootLayout({
