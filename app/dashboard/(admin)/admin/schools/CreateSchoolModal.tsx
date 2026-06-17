@@ -11,7 +11,7 @@ export function CreateSchoolModal() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    
+
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const location = formData.get("location") as string;
@@ -30,7 +30,7 @@ export function CreateSchoolModal() {
 
   return (
     <>
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
         className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-sm transition-all"
       >
@@ -47,16 +47,16 @@ export function CreateSchoolModal() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
                   <Building className="w-4 h-4 text-slate-400" /> School Name <span className="text-red-500">*</span>
                 </label>
-                <input 
-                  type="text" 
-                  name="name" 
-                  required 
+                <input
+                  type="text"
+                  name="name"
+                  required
                   placeholder="e.g. Springfield High"
                   className="w-full border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
@@ -66,9 +66,9 @@ export function CreateSchoolModal() {
                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
                   <MapPin className="w-4 h-4 text-slate-400" /> Location
                 </label>
-                <input 
-                  type="text" 
-                  name="location" 
+                <input
+                  type="text"
+                  name="location"
                   placeholder="e.g. New York, NY"
                   className="w-full border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
@@ -78,24 +78,24 @@ export function CreateSchoolModal() {
                 <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
                   <User className="w-4 h-4 text-slate-400" /> Coordinator Name
                 </label>
-                <input 
-                  type="text" 
-                  name="coordinatorName" 
+                <input
+                  type="text"
+                  name="coordinatorName"
                   placeholder="e.g. John Doe"
                   className="w-full border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
               </div>
 
               <div className="pt-4 flex items-center gap-3">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
                   className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isLoading}
                   className="flex-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-sm transition-colors disabled:opacity-50"
                 >
