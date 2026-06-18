@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookOpen, FileText, Calendar, Briefcase, LogOut, BarChart } from "lucide-react";
+import { Home, BookOpen, FileText, ClipboardCheck, Calendar, Briefcase, LogOut, BarChart, Building, Film } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Home", icon: Home, exact: true },
+  { href: "/dashboard/school", label: "School", icon: Building },
   { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/videos", label: "Videos", icon: Film },
   { href: "/dashboard/assignments", label: "Tasks", icon: FileText },
-  { href: "/dashboard/analytics", label: "Report", icon: BarChart },
-  { href: "/dashboard/internships", label: "Intern", icon: Briefcase },
+  { href: "/dashboard/tests", label: "Tests", icon: FileText },
+  { href: "/dashboard/attendance", label: "Attend", icon: ClipboardCheck },
+  { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
 ];
 
 export function StudentMobileNav() {

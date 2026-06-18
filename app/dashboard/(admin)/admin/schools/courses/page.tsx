@@ -323,10 +323,10 @@ export default function AdminCoursesPage() {
                                   <Clock size={10} /> {topic.duration}
                                 </span>
                               )}
-                              {topic.videoUrl && (
-                                <a href={topic.videoUrl} target="_blank" rel="noopener noreferrer"
+                              {topic.driveFileId && (
+                                <a href={`https://drive.google.com/file/d/${topic.driveFileId}/view`} target="_blank" rel="noopener noreferrer"
                                   className="flex items-center gap-1 text-[10px] font-bold text-indigo-400 hover:text-indigo-600">
-                                  <PlayCircle size={10} /> Watch
+                                  <PlayCircle size={10} /> Preview
                                 </a>
                               )}
                             </div>
@@ -355,7 +355,7 @@ export default function AdminCoursesPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <input name="duration" placeholder="Duration (e.g. 1 hr)" className="h-9 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-                        <input name="videoUrl" type="url" placeholder="Video URL" className="h-9 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                        <input name="videoUrl" type="url" placeholder="Google Drive Video URL" className="h-9 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                       </div>
                       <div className="flex gap-2">
                         <button type="submit" disabled={isPending}

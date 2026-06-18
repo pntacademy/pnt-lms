@@ -4,12 +4,13 @@ import { useState, useEffect, useTransition } from "react";
 import {
   Users, Search, Plus, X, Trash2, GraduationCap,
   CheckCircle2, ClipboardCheck, BookOpen, ChevronRight,
-  Phone, Building2, Calendar, Download
+  Phone, Building2, Calendar, Download, ChevronDown
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { getAllStudents, registerStudent, deleteStudent } from "@/app/actions/students";
+import { getAllStudents, registerStudent, deleteStudent, updateStudentStatus } from "@/app/actions/students";
 import { getCourses } from "@/app/actions/attendance";
+import { StudentStatus } from "@prisma/client";
 
 type Student = Awaited<ReturnType<typeof getAllStudents>>[0];
 type Course = { id: string; title: string };
@@ -40,7 +41,8 @@ export default function AdminStudentsPage() {
       s.name?.toLowerCase().includes(q) ||
       s.studentId?.toLowerCase().includes(q) ||
       s.className?.toLowerCase().includes(q) ||
-      s.instituteName?.toLowerCase().includes(q)
+      s.instituteName?.toLowerCase().includes(q) ||
+      s.studentStatus?.toLowerCase().includes(q)
     );
   });
 
@@ -93,6 +95,20 @@ export default function AdminStudentsPage() {
     startTransition(async () => {
       try {
         await deleteStudent(student.id);
+        load();
+      } catch (err: any) {
+        setMessage({ type: "error", text: err.message });
+      }
+    });
+  };
+
+  const handleUpdateStatus = (studentDbId: string, status: StudentStatus, customStatus?: string) => {
+    startTransition(async () => {
+      try {
+        await updateStudentStatus(studentDbId, status, customStatus);
+        if (selectedStudent && selectedStudent.id === studentDbId) {
+          setSelectedStudent({ ...selectedStudent, studentStatus: status, customStatus: customStatus || null });
+        }
         load();
       } catch (err: any) {
         setMessage({ type: "error", text: err.message });
@@ -169,6 +185,7 @@ export default function AdminStudentsPage() {
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
                   <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest">Student</th>
+                  <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest hidden sm:table-cell">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest hidden md:table-cell">School</th>
                   <th className="px-4 py-3 text-center text-xs font-black uppercase text-slate-500 tracking-widest hidden lg:table-cell">Attendance</th>
                   <th className="px-4 py-3 text-center text-xs font-black uppercase text-slate-500 tracking-widest hidden lg:table-cell">Avg Score</th>
@@ -192,6 +209,15 @@ export default function AdminStudentsPage() {
                           <div className="text-xs font-mono text-slate-400 mt-0.5">{student.studentId}</div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-4 hidden sm:table-cell">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                        student.studentStatus === 'INTERN' ? 'bg-purple-100 text-purple-800' :
+                        student.studentStatus === 'OTHER' ? 'bg-amber-100 text-amber-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {student.studentStatus === 'OTHER' && student.customStatus ? student.customStatus : student.studentStatus}
+                      </span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <div className="text-sm font-medium text-slate-600">{student.instituteName || "—"}</div>
@@ -274,13 +300,41 @@ export default function AdminStudentsPage() {
                   <input name="contactNumber" placeholder="e.g. +91 98765 43210" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                 </div>
                 <div className="col-span-2 space-y-1">
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Student Status</label>
+                  <div className="relative">
+                    <select 
+                      name="studentStatus" 
+                      onChange={(e) => {
+                        const el = document.getElementById('registerCustomStatusContainer');
+                        if (el) el.style.display = e.target.value === 'OTHER' ? 'block' : 'none';
+                      }}
+                      className="appearance-none w-full h-10 pl-3 pr-10 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white hover:border-indigo-300 transition-colors cursor-pointer">
+                      <option value="STUDENT">Student</option>
+                      <option value="INTERN">Intern</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                      <ChevronDown size={16} />
+                    </div>
+                  </div>
+                </div>
+                <div id="registerCustomStatusContainer" className="col-span-2 space-y-1 hidden">
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Custom Status Label</label>
+                  <input name="customStatus" placeholder="e.g. Mentor" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                </div>
+                <div className="col-span-2 space-y-1">
                   <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Enroll in Course</label>
-                  <select name="courseId" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
-                    <option value="">— None —</option>
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.id}>{c.title}</option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select name="courseId" className="appearance-none w-full h-10 pl-3 pr-10 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white hover:border-indigo-300 transition-colors cursor-pointer">
+                      <option value="">— None —</option>
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>{c.title}</option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                      <ChevronDown size={16} />
+                    </div>
+                  </div>
                 </div>
               </div>
               <p className="text-xs text-slate-400">A unique Roll ID (e.g. PNT-2026-011) will be auto-generated.</p>
@@ -352,6 +406,49 @@ export default function AdminStudentsPage() {
                     </div>
                   )
                 ))}
+              </div>
+
+              {/* Status Updater */}
+              <div className="bg-white border-2 border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                <label className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  Assign Status
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedStudent.studentStatus}
+                    onChange={(e) => handleUpdateStatus(selectedStudent.id, e.target.value as StudentStatus, selectedStudent.customStatus || "")}
+                    disabled={isPending}
+                    className="appearance-none w-full h-12 pl-4 pr-10 rounded-xl border-2 border-slate-200 text-sm font-black text-slate-700 bg-slate-50 hover:bg-white hover:border-indigo-300 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all cursor-pointer"
+                  >
+                    <option value="STUDENT">Student</option>
+                    <option value="INTERN">Intern</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                    <ChevronDown size={18} strokeWidth={3} />
+                  </div>
+                </div>
+                {selectedStudent.studentStatus === 'OTHER' && (
+                  <div className="mt-3 flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Custom status (e.g. Mentor)"
+                      defaultValue={selectedStudent.customStatus || ""}
+                      id="drawerCustomStatus"
+                      className="flex-1 h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 bg-white focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100" 
+                    />
+                    <button 
+                      onClick={() => {
+                        const val = (document.getElementById('drawerCustomStatus') as HTMLInputElement).value;
+                        handleUpdateStatus(selectedStudent.id, 'OTHER', val);
+                      }}
+                      className="px-4 h-10 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-700 transition-colors shadow-sm"
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Enrolled Courses */}

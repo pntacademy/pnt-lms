@@ -80,12 +80,18 @@ export default async function ProfilePage() {
               </div>
               <div className="text-center sm:text-left mb-2">
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{user.name || "Student Name"}</h1>
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider shadow-sm">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    {user.role}
-                  </div>
-                  <span className="text-slate-500 font-medium text-sm flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
+                  {user.studentStatus && (
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm ${
+                      user.studentStatus === 'INTERN' ? 'bg-purple-100 text-purple-700' :
+                      user.studentStatus === 'OTHER' ? 'bg-amber-100 text-amber-700' :
+                      'bg-blue-100 text-blue-700'
+                    }`}>
+                      <UserCircle className="w-3.5 h-3.5" />
+                      {user.studentStatus === 'OTHER' && user.customStatus ? user.customStatus : user.studentStatus}
+                    </div>
+                  )}
+                  <span className="text-slate-500 font-medium text-sm flex items-center gap-1.5 ml-2">
                     <Calendar className="w-4 h-4" /> Joined {joinDate}
                   </span>
                 </div>

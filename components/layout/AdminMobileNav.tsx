@@ -12,6 +12,7 @@ import {
   LogOut,
   CalendarDays,
   Building,
+  FileText,
 } from "lucide-react";
 
 const links = [
@@ -21,6 +22,7 @@ const links = [
   { href: "/dashboard/admin/attendance", label: "Attend", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade", icon: FileCheck2 },
   { href: "/dashboard/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/admin/tests", label: "Tests", icon: FileText },
   { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 

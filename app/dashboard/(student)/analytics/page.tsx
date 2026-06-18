@@ -5,6 +5,7 @@ import { BarChart, BookOpen, CheckCircle2, ClipboardCheck, Trophy } from "lucide
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { DownloadReportBtn } from "@/components/ui/DownloadReportBtn";
+import { TestPerformanceCharts } from "@/components/analytics/TestPerformanceCharts";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -93,6 +94,115 @@ export default async function AnalyticsPage() {
 
   const allGraded = courseAnalytics.flatMap(c => c.assignments.graded > 0 ? [c.assignments.avgGrade] : []).filter(g => g !== null) as number[];
   const overallGrade = allGraded.length > 0 ? Math.round(allGraded.reduce((acc, g) => acc + g, 0) / allGraded.length) : null;
+
+  // Fetch Test Performance Data
+  const availableTests = await prisma.test.count({ where: { isPublished: true } });
+  const testSubmissions = await prisma.testSubmission.findMany({
+    where: { userId: session.user.id },
+    include: { test: true },
+    orderBy: { createdAt: "asc" }
+  });
+
+  const totalAttempted = testSubmissions.length;
+  let averageScore = 0;
+  let highestScore = 0;
+  let lowestScore = totalAttempted > 0 ? 100 : 0;
+  let passedTests = 0;
+  
+  let bestTestName = "N/A";
+  let worstTestName = "N/A";
+
+  const trendData: any[] = [];
+  const comparisonData: any[] = [];
+  const distribution = {
+    exceptional: 0, // 90-100%
+    good: 0,        // 75-89%
+    average: 0,     // 60-74%
+    poor: 0         // <60%
+  };
+
+  testSubmissions.forEach(sub => {
+    const percentage = sub.totalMarks > 0 ? Math.round((sub.score / sub.totalMarks) * 100) : 0;
+    
+    averageScore += percentage;
+    if (percentage > highestScore) {
+      highestScore = percentage;
+      bestTestName = sub.test.title;
+    }
+    if (percentage <= lowestScore) {
+      lowestScore = percentage;
+      worstTestName = sub.test.title;
+    }
+    
+    if (percentage >= 60) passedTests++;
+
+    if (percentage >= 90) distribution.exceptional++;
+    else if (percentage >= 75) distribution.good++;
+    else if (percentage >= 60) distribution.average++;
+    else distribution.poor++;
+
+    trendData.push({
+      name: sub.test.title,
+      percentage,
+      date: sub.createdAt.toISOString()
+    });
+
+    comparisonData.push({
+      name: sub.test.title,
+      score: sub.score,
+      total: sub.totalMarks
+    });
+  });
+
+  if (totalAttempted > 0) {
+    averageScore = Math.round(averageScore / totalAttempted);
+  }
+
+  const distributionData = [
+    { name: "90-100%", count: distribution.exceptional, fill: "#10b981" },
+    { name: "75-89%", count: distribution.good, fill: "#3b82f6" },
+    { name: "60-74%", count: distribution.average, fill: "#f59e0b" },
+    { name: "< 60%", count: distribution.poor, fill: "#ef4444" },
+  ];
+
+  let recentTrend: "Improving" | "Stable" | "Declining" = "Stable";
+  if (totalAttempted >= 2) {
+    const last3 = trendData.slice(-3);
+    const recentAvg = last3.reduce((acc, t) => acc + t.percentage, 0) / last3.length;
+    if (recentAvg > averageScore + 5) recentTrend = "Improving";
+    else if (recentAvg < averageScore - 5) recentTrend = "Declining";
+  }
+
+  const textualAnalysis = [];
+  if (totalAttempted > 0) {
+    textualAnalysis.push(`You have attempted ${totalAttempted} tests with an average score of ${averageScore}%.`);
+    textualAnalysis.push(`Your strongest performance was in ${bestTestName} with a score of ${highestScore}%.`);
+    if (recentTrend === "Improving") textualAnalysis.push(`Great job! Your recent results show an upward trend compared to earlier assessments.`);
+    else if (recentTrend === "Declining") textualAnalysis.push(`Your recent scores are slightly declining. Consider reviewing your weaker topics like ${worstTestName}.`);
+    else textualAnalysis.push(`Your performance is stable and consistent across tests.`);
+    
+    if (lowestScore < 60) {
+      textualAnalysis.push(`Focus on improving ${worstTestName} where your score dropped to ${lowestScore}%.`);
+    }
+  }
+
+  const testPerformanceData = {
+    trendData,
+    distributionData,
+    comparisonData,
+    summary: {
+      totalAttempted,
+      totalAvailable: availableTests,
+      averageScore,
+      highestScore,
+      lowestScore,
+      passRate: totalAttempted > 0 ? Math.round((passedTests / totalAttempted) * 100) : 0,
+      bestTestName,
+      worstTestName,
+      recentTrend,
+      textualAnalysis
+    }
+  };
 
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
@@ -216,6 +326,9 @@ export default async function AnalyticsPage() {
           ))}
         </div>
       )}
+
+      {/* Test Performance Module */}
+      <TestPerformanceCharts data={testPerformanceData} />
     </div>
   );
 }
