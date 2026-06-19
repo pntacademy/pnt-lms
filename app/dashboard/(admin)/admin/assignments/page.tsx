@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import {
   FileCheck2, CheckCircle2, Download, Search, X,
   ChevronRight, Plus, Trash2, BookOpen, Calendar,
@@ -60,16 +60,15 @@ export default function AdminAssignmentsPage() {
   const [isGrading, setIsGrading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const load = async () => {
-    setIsLoading(true);
+  const load = useCallback(async () => {
     const [a, c, s] = await Promise.all([getAllAssignments(), getCoursesWithTopics(), getAllSubmissions()]);
     if (a.success && a.assignments) setAssignments(a.assignments as Assignment[]);
     if (c.success && c.courses) setCourses(c.courses as Course[]);
     if (s.success && s.submissions) setSubmissions(s.submissions as Submission[]);
     setIsLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   // Topics for currently selected course
   const selectedCourseTopics = courses.find(c => c.id === selectedCourseId)?.topics ?? [];

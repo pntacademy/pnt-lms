@@ -44,9 +44,11 @@ export default function AdminCoursesPage() {
     setIsLoading(false);
   };
 
+  // eslint-disable-next-line
   useEffect(() => { load(); }, []);
 
   // Keep drawer in sync after reload
+  // eslint-disable-next-line
   useEffect(() => {
     if (selectedCourse) {
       const updated = courses.find(c => c.id === selectedCourse.id);

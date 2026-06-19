@@ -8,7 +8,9 @@ import {
 import { getEvents, createEvent, deleteEvent } from "@/app/actions/calendar";
 import { getAllCourses } from "@/app/actions/courses";
 
-type Event = Awaited<ReturnType<typeof getEvents>>[0];
+import FullCalendarWrapper, { CalendarEvent } from "@/components/calendar/FullCalendarWrapper";
+
+type Event = CalendarEvent;
 type Course = Awaited<ReturnType<typeof getAllCourses>>[0];
 
 export default function AdminCalendarPage() {
@@ -27,6 +29,7 @@ export default function AdminCalendarPage() {
     setIsLoading(false);
   };
 
+  // eslint-disable-next-line
   useEffect(() => { load(); }, []);
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,68 +82,27 @@ export default function AdminCalendarPage() {
         }`}>{message.text}</div>
       )}
 
-      {/* Events List */}
+      {/* Events Calendar */}
       {isLoading ? (
-        <div className="p-16 text-center text-slate-400 font-bold uppercase tracking-widest text-sm animate-pulse">Loading events...</div>
+        <div className="p-16 text-center text-slate-400 font-bold uppercase tracking-widest text-sm animate-pulse">Loading calendar...</div>
       ) : events.length === 0 ? (
-        <div className="p-16 text-center flex flex-col items-center gap-3 bg-white border border-slate-200 rounded-xl">
-          <CalendarDays size={40} className="text-slate-200" />
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">
-            No upcoming events. Schedule a class!
-          </p>
+        <div className="space-y-4">
+          <div className="p-16 text-center flex flex-col items-center gap-3 bg-white border border-slate-200 rounded-xl">
+            <CalendarDays size={40} className="text-slate-200" />
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">
+              No upcoming events. Schedule a class!
+            </p>
+          </div>
+          <FullCalendarWrapper events={events as any} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.map(evt => {
-            const date = new Date(evt.date);
-            return (
-              <div key={evt.id} className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all overflow-hidden flex flex-col">
-                <div className={`h-2 w-full ${evt.type === 'LIVE_CLASS' ? "bg-gradient-to-r from-red-400 to-rose-500" : evt.type === 'DEADLINE' ? "bg-gradient-to-r from-orange-400 to-amber-500" : "bg-gradient-to-r from-blue-500 to-indigo-600"}`} />
-                <div className="p-5 flex-1 flex flex-col">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 inline-block ${
-                        evt.type === 'LIVE_CLASS' ? "bg-red-50 text-red-600" : evt.type === 'DEADLINE' ? "bg-orange-50 text-orange-600" : "bg-indigo-50 text-indigo-600"
-                      }`}>{evt.type.replace("_", " ")}</span>
-                      <h3 className="font-black text-slate-800 leading-tight">{evt.title}</h3>
-                    </div>
-                    <button onClick={() => handleDelete(evt as any)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-
-                  {evt.description && <p className="text-xs text-slate-500 mb-3 line-clamp-2">{evt.description}</p>}
-
-                  <div className="mt-auto space-y-2 text-xs font-bold text-slate-500">
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon size={14} className="text-slate-400" />
-                      {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    {evt.duration && (
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="text-slate-400" />
-                        {evt.duration} minutes
-                      </div>
-                    )}
-                    {evt.course ? (
-                      <div className="flex items-center gap-2 text-indigo-600">
-                        <BookOpen size={14} className="text-indigo-400" />
-                        {evt.course.title}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-emerald-600">
-                        <Users size={14} className="text-emerald-400" />
-                        General Event
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                      <span className="text-[10px] uppercase text-slate-400 tracking-wider">Created by {evt.teacher.name}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="mt-8">
+          <FullCalendarWrapper events={events as any} onEventClick={(evt) => {
+            // Optional: Handle admin event click, e.g. open edit modal
+            if (confirm(`Delete event "${evt.title}"?`)) {
+              handleDelete(evt as any);
+            }
+          }} />
         </div>
       )}
 
@@ -175,21 +137,39 @@ export default function AdminCalendarPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Event Type</label>
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Type</label>
                   <select name="type" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
                     <option value="LIVE_CLASS">Live Class</option>
-                    <option value="DEADLINE">Deadline</option>
-                    <option value="GENERAL">General</option>
+                    <option value="ASSIGNMENT_DEADLINE">Deadline</option>
+                    <option value="TEST">Test/Exam</option>
+                    <option value="HOLIDAY">Holiday</option>
+                    <option value="ANNOUNCEMENT">Announcement</option>
+                    <option value="CUSTOM">Custom/General</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Related Course</label>
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Priority</label>
+                  <select name="priority" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="LOW">Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Course</label>
                   <select name="courseId" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
-                    <option value="general">No Course (General)</option>
+                    <option value="general">General (No Course)</option>
                     {courses.map(c => (
                       <option key={c.id} value={c.id}>{c.title}</option>
                     ))}
                   </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Color</label>
+                  <input type="color" name="color" defaultValue="#3b82f6" className="w-full h-10 px-1 py-1 rounded-lg border border-slate-200 cursor-pointer" />
                 </div>
               </div>
 

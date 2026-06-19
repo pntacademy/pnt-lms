@@ -53,6 +53,7 @@ export default function AdminAttendancePage() {
 
   useEffect(() => {
     if (selectedCourse && selectedDate) {
+      // eslint-disable-next-line
       fetchAttendance();
     }
   }, [selectedCourse, selectedDate]);

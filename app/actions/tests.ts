@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// @ts-ignore
+// @ts-expect-error - Bypassing type check for local CommonJS import
 const pdfParse = require("pdf-parse/lib/pdf-parse.js");
 
 // Initialize Gemini API

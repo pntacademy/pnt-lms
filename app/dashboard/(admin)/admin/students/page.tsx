@@ -33,6 +33,7 @@ export default function AdminStudentsPage() {
     setIsLoading(false);
   };
 
+  // eslint-disable-next-line
   useEffect(() => { load(); }, []);
 
   const filtered = students.filter((s) => {

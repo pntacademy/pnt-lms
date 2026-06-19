@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import { Plus, Search, Trash2, FileText, Settings, BookOpen } from "lucide-react";
 import { getAllTests, deleteTest, togglePublishTest } from "@/app/actions/tests";
 import Link from "next/link";
@@ -13,16 +13,15 @@ export default function AdminTestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
-  const load = async () => {
-    setIsLoading(true);
+  const load = useCallback(async () => {
     const data = await getAllTests();
     setTests(data);
     setIsLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const filtered = tests.filter((t) =>
     t.title.toLowerCase().includes(search.toLowerCase()) || 
