@@ -21,34 +21,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.studentId || !credentials?.password) return null;
+        try {
+          if (!credentials?.studentId || !credentials?.password) return null;
 
-        // Note: For teacher login, they might use 'email' in the studentId field
-        const user = await prisma.user.findFirst({
-          where: {
-            OR: [
-              { studentId: credentials.studentId as string },
-              { email: credentials.studentId as string }
-            ]
+          // Note: For teacher login, they might use 'email' in the studentId field
+          const user = await prisma.user.findFirst({
+            where: {
+              OR: [
+                { studentId: credentials.studentId as string },
+                { email: credentials.studentId as string }
+              ]
+            }
+          });
+
+          if (!user || !user.passwordHash) {
+             return null;
           }
-        });
 
-        if (!user || !user.passwordHash) return null;
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password as string,
+            user.passwordHash
+          );
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          user.passwordHash
-        );
+          if (!isPasswordValid) {
+             return null;
+          }
 
-        if (!isPasswordValid) return null;
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          studentId: user.studentId,
-          role: user.role,
-        };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            studentId: user.studentId,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("FATAL NEXTAUTH ERROR:", error);
+          return null;
+        }
       },
     }),
   ],
