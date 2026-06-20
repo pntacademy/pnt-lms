@@ -15,17 +15,19 @@ import {
   LogOut,
   BarChart,
   Building,
+  Film,
 } from "lucide-react";
 
 const mainLinks = [
   { href: "/dashboard", label: "Dashboard", icon: Home, exact: true },
   { href: "/dashboard/school", label: "My School", icon: Building },
   { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/videos", label: "Videos", icon: Film },
   { href: "/dashboard/assignments", label: "Assignments", icon: FileText },
+  { href: "/dashboard/tests", label: "Tests", icon: FileText },
   { href: "/dashboard/attendance", label: "Attendance", icon: ClipboardCheck },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart },
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
-  { href: "/dashboard/internships", label: "Internships", icon: Briefcase },
 ];
 
 const bottomLinks = [

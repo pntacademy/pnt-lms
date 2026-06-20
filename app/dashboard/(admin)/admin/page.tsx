@@ -1,9 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import { Settings, PlusCircle, Users, CheckSquare, BarChart } from "lucide-react";
+import { getEvents } from "@/app/actions/calendar";
+import { UpcomingEventsWidget, CalendarAnalytics } from "@/components/calendar/UpcomingEventsWidget";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const events = await getEvents();
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8">
       <header className="mb-8">
@@ -16,24 +17,32 @@ export default function AdminPage() {
         </p>
       </header>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Link href="/dashboard/admin/courses" className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-blue-500 to-indigo-600 border border-indigo-700 rounded-xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all group">
-          <PlusCircle size={32} strokeWidth={2.5} className="text-white" />
-          <span className="font-black uppercase text-sm text-white">Manage Courses</span>
-        </Link>
-        <Link href="/dashboard/admin/assignments" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
-          <CheckSquare size={32} strokeWidth={2.5} className="text-slate-800" />
-          <span className="font-black uppercase text-sm text-slate-800">Grade Assignments</span>
-        </Link>
-        <Link href="/dashboard/admin/attendance" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
-          <Users size={32} strokeWidth={2.5} className="text-slate-800" />
-          <span className="font-black uppercase text-sm text-slate-800">Mark Attendance</span>
-        </Link>
-        <Link href="/dashboard/admin/students" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all">
-          <BarChart size={32} strokeWidth={2.5} className="text-slate-800" />
-          <span className="font-black uppercase text-sm text-slate-800">Manage Students</span>
-        </Link>
+      {/* Analytics */}
+      <CalendarAnalytics events={events as any} />
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link href="/dashboard/admin/courses" className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-blue-500 to-indigo-600 border border-indigo-700 rounded-xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all group h-full min-h-[140px]">
+            <PlusCircle size={32} strokeWidth={2.5} className="text-white" />
+            <span className="font-black uppercase text-sm text-white">Manage Courses</span>
+          </Link>
+          <Link href="/dashboard/admin/assignments" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
+            <CheckSquare size={32} strokeWidth={2.5} className="text-slate-800" />
+            <span className="font-black uppercase text-sm text-slate-800">Grade Assignments</span>
+          </Link>
+          <Link href="/dashboard/admin/attendance" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
+            <Users size={32} strokeWidth={2.5} className="text-slate-800" />
+            <span className="font-black uppercase text-sm text-slate-800">Mark Attendance</span>
+          </Link>
+          <Link href="/dashboard/admin/students" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
+            <BarChart size={32} strokeWidth={2.5} className="text-slate-800" />
+            <span className="font-black uppercase text-sm text-slate-800">Manage Students</span>
+          </Link>
+        </div>
+        <div className="lg:col-span-1">
+          <UpcomingEventsWidget events={events as any} role="ADMIN" />
+        </div>
       </div>
 
       {/* Student Onboarding - redirects to dedicated Students page */}

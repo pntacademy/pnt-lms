@@ -29,7 +29,7 @@ export async function createGradeMaterial(data: {
   if (grade) {
     revalidatePath(`/dashboard/admin/schools/${grade.schoolId}/grades/${data.gradeId}`);
     revalidatePath(`/dashboard/admin/schools/${grade.schoolId}/grades/${data.gradeId}/materials`);
-    revalidatePath(`/dashboard/student/school`);
+    revalidatePath(`/dashboard/school`);
   }
 
   return material;
@@ -47,5 +47,5 @@ export async function deleteGradeMaterial(materialId: string, gradeId: string, s
 
   revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${gradeId}`);
   revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${gradeId}/materials`);
-  revalidatePath(`/dashboard/student/school`);
+  revalidatePath(`/dashboard/school`);
 }

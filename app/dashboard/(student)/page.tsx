@@ -5,13 +5,15 @@ import { Megaphone, Clock, CheckSquare, Trophy, ClipboardCheck, FileText, Chevro
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { getEvents } from "@/app/actions/calendar";
+import { UpcomingEventsWidget } from "@/components/calendar/UpcomingEventsWidget";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
   // Fetch all data in parallel
-  const [student, attendances, submissions, enrollments] = await Promise.all([
+  const [student, attendances, submissions, enrollments, events] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { name: true, studentId: true, className: true }
@@ -30,7 +32,8 @@ export default async function DashboardPage() {
     prisma.enrollment.findMany({
       where: { userId: session.user.id },
       include: { course: { select: { id: true, title: true } } }
-    })
+    }),
+    getEvents()
   ]);
 
   const name = student?.name || "Student";
@@ -130,9 +133,11 @@ export default async function DashboardPage() {
             </Card>
           </div>
 
-          {/* Column 2: Recent Attendance */}
+          {/* Column 2: Recent Attendance & Events */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-xl shadow-slate-200/50 w-fit">
+            <UpcomingEventsWidget events={events as any} role="STUDENT" />
+
+            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-xl shadow-slate-200/50 w-fit mt-6">
               <div className="bg-gradient-to-br from-orange-300 to-amber-400 p-2 rounded-lg border border-slate-200">
                 <ClipboardCheck size={20} strokeWidth={2.5} className="text-slate-800" />
               </div>
@@ -150,11 +155,10 @@ export default async function DashboardPage() {
                   <p className="font-bold text-sm text-slate-800 truncate max-w-[160px]">{record.course.title}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{new Date(record.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</p>
                 </div>
-                <span className={`text-xs font-black uppercase px-3 py-1.5 rounded-lg border-2 ${
-                  record.status === "PRESENT" ? "bg-green-50 border-green-500 text-green-700" :
-                  record.status === "LATE" ? "bg-amber-50 border-amber-500 text-amber-700" :
-                  "bg-red-50 border-red-500 text-red-700"
-                }`}>{record.status}</span>
+                <span className={`text-xs font-black uppercase px-3 py-1.5 rounded-lg border-2 ${record.status === "PRESENT" ? "bg-green-50 border-green-500 text-green-700" :
+                    record.status === "LATE" ? "bg-amber-50 border-amber-500 text-amber-700" :
+                      "bg-red-50 border-red-500 text-red-700"
+                  }`}>{record.status}</span>
               </div>
             ))}
 
@@ -184,10 +188,9 @@ export default async function DashboardPage() {
               <div key={sub.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xl shadow-slate-200/50">
                 <div className="flex justify-between items-start mb-2">
                   <p className="font-black text-sm text-slate-800 uppercase leading-tight max-w-[180px]">{sub.assignment.title}</p>
-                  <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border-2 ml-2 flex-shrink-0 ${
-                    sub.status === "GRADED" ? "bg-green-50 border-green-500 text-green-700" :
-                    "bg-blue-50 border-blue-500 text-blue-700"
-                  }`}>{sub.status}</span>
+                  <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border-2 ml-2 flex-shrink-0 ${sub.status === "GRADED" ? "bg-green-50 border-green-500 text-green-700" :
+                      "bg-blue-50 border-blue-500 text-blue-700"
+                    }`}>{sub.status}</span>
                 </div>
                 {sub.score !== null && (
                   <div className="flex items-center gap-2 mt-2">

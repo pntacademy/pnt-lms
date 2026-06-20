@@ -124,12 +124,33 @@ export default async function SchoolPortalPage() {
                       </p>
                     )}
 
+                    {material.videoUrl && (
+                      <div className="mt-2 mb-2 w-full max-w-2xl">
+                        {(() => {
+                          const match = material.videoUrl.match(/[-\w]{25,}/);
+                          const driveFileId = match ? match[0] : null;
+                          if (driveFileId) {
+                            return (
+                              <div className="w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-lg border border-slate-200 relative">
+                                <iframe
+                                  src={`https://drive.google.com/file/d/${driveFileId}/preview`}
+                                  className="w-full h-full border-0 absolute inset-0"
+                                  allowFullScreen
+                                  allow="autoplay; fullscreen"
+                                />
+                              </div>
+                            );
+                          }
+                          return (
+                            <a href={material.videoUrl} target="_blank" rel="noopener noreferrer" className="flex w-fit items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-sm font-bold shadow-sm transition-colors">
+                              <Video className="w-4 h-4" /> Watch External Video
+                            </a>
+                          );
+                        })()}
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap gap-3 pt-3">
-                      {material.videoUrl && (
-                        <a href={material.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-sm font-bold shadow-sm transition-colors">
-                          <Video className="w-4 h-4" /> Watch Video
-                        </a>
-                      )}
                       {material.linkUrl && (
                         <a href={material.linkUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-sm font-bold shadow-sm transition-colors">
                           <LinkIcon className="w-4 h-4" /> Open Assignment Link

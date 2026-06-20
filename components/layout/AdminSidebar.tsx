@@ -14,6 +14,8 @@ import {
   ArrowLeftCircle,
   CalendarDays,
   Building,
+  PlaySquare,
+  FileText,
 } from "lucide-react";
 
 const adminLinks = [
@@ -23,6 +25,8 @@ const adminLinks = [
   { href: "/dashboard/admin/attendance", label: "Mark Attendance", icon: ClipboardCheck },
   { href: "/dashboard/admin/assignments", label: "Grade Submissions", icon: FileCheck2 },
   { href: "/dashboard/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/dashboard/admin/videos", label: "Videos", icon: PlaySquare },
+  { href: "/dashboard/admin/tests", label: "Tests", icon: FileText },
   { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 

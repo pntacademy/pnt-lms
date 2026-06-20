@@ -120,6 +120,20 @@ export async function addCourseTopic(courseId: string, formData: FormData) {
 
   if (!title) throw new Error("Topic title is required");
 
+  let driveFileId = null;
+  if (videoUrl) {
+    if (!videoUrl.includes("drive.google.com")) {
+      throw new Error("Only Google Drive URLs are supported.");
+    }
+    const match = videoUrl.match(/[-\w]{25,}/);
+    if (!match) {
+      throw new Error("Invalid Google Drive URL. Could not extract File ID.");
+    }
+    driveFileId = match[0];
+  }
+
+  if (!title) throw new Error("Topic title is required");
+
   // Get the current max order to append at end
   const lastTopic = await prisma.courseTopic.findFirst({
     where: { courseId },
@@ -128,7 +142,7 @@ export async function addCourseTopic(courseId: string, formData: FormData) {
   const order = (lastTopic?.order ?? -1) + 1;
 
   await prisma.courseTopic.create({
-    data: { courseId, title, description, videoUrl, duration, order },
+    data: { courseId, title, description, driveFileId, duration, order },
   });
 
   revalidatePath("/dashboard/admin/courses");

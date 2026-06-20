@@ -62,7 +62,7 @@ export default async function CoursesPage() {
       ) : (
         <div className="space-y-4">
           {user?.school && user?.schoolGrade && (
-            <Link href="/dashboard/student/school" className="block">
+            <Link href="/dashboard/school" className="block">
               <div className="bg-white border border-indigo-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-all group">
                 <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 to-indigo-500" />
                 <div className="p-4 md:p-5">
@@ -170,16 +170,14 @@ function CourseCard({ course }: { course: any }) {
                   )}
                 </div>
 
-                {topic.videoUrl ? (
-                  <a
-                    href={topic.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                {topic.driveFileId ? (
+                  <Link
+                    href={`/dashboard/courses/${course.id}/learn?topicId=${topic.id}`}
                     className="flex-shrink-0 flex items-center gap-1 text-xs font-black text-orange-500 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 px-2 py-1.5 rounded-lg transition-colors"
                   >
                     <PlayCircle size={14} />
                     <span className="hidden sm:inline">Watch</span>
-                  </a>
+                  </Link>
                 ) : (
                   <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-slate-300">
                     <Lock size={13} />

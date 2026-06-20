@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { StudentStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function getAllStudents() {
@@ -55,6 +56,8 @@ export async function getAllStudents() {
       avgScore,
       totalAttendance: total,
       totalSubmissions: s.submissions.length,
+      studentStatus: s.studentStatus,
+      customStatus: s.customStatus,
     };
   });
 }
@@ -69,6 +72,8 @@ export async function registerStudent(formData: FormData) {
   const age = formData.get("age") as string;
   const contactNumber = formData.get("contactNumber") as string;
   const courseId = formData.get("courseId") as string;
+  const studentStatus = (formData.get("studentStatus") as StudentStatus) || "STUDENT";
+  const customStatus = formData.get("customStatus") as string | null;
 
   if (!name || !className) throw new Error("Name and Class are required");
 
@@ -97,6 +102,8 @@ export async function registerStudent(formData: FormData) {
       instituteName: instituteName || null,
       age: age ? parseInt(age) : null,
       contactNumber: contactNumber || null,
+      studentStatus,
+      customStatus: studentStatus === "OTHER" ? customStatus : null,
     },
   });
 
@@ -117,5 +124,20 @@ export async function deleteStudent(studentDbId: string) {
   if (!session?.user || role !== "ADMIN") throw new Error("Unauthorized");
 
   await prisma.user.delete({ where: { id: studentDbId } });
+  revalidatePath("/dashboard/admin/students");
+}
+
+export async function updateStudentStatus(studentDbId: string, status: StudentStatus, customStatus?: string) {
+  const session = await auth();
+  const role = (session?.user as any)?.role;
+  if (!session?.user || role !== "ADMIN") throw new Error("Unauthorized");
+
+  await prisma.user.update({
+    where: { id: studentDbId },
+    data: { 
+      studentStatus: status,
+      customStatus: status === "OTHER" ? customStatus || null : null
+    },
+  });
   revalidatePath("/dashboard/admin/students");
 }

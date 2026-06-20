@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
-import { EventType } from "@prisma/client";
+import { EventType, EventStatus, EventPriority } from "@prisma/client";
 
 // Get events
 export async function getEvents() {
@@ -13,6 +13,9 @@ export async function getEvents() {
   const role = (session.user as any).role;
   const userId = session.user.id;
 
+  // Optional query params for filtering could be passed, but for now we fetch all relevant
+  // and do filtering on client side for performance, or we can add args to getEvents.
+  // We will add args for backend filtering.
   let events;
 
   if (role === "STUDENT") {
@@ -79,9 +82,15 @@ export async function createEvent(formData: FormData) {
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || null;
   const dateStr = formData.get("date") as string;
+  const endDateStr = formData.get("endDate") as string;
   const durationStr = formData.get("duration") as string;
-  const type = (formData.get("type") as EventType) || "GENERAL";
+  const type = (formData.get("type") as EventType) || "CUSTOM";
+  const status = (formData.get("status") as EventStatus) || "UPCOMING";
+  const priority = (formData.get("priority") as EventPriority) || "MEDIUM";
+  const color = (formData.get("color") as string)?.trim() || null;
+  
   const courseId = (formData.get("courseId") as string)?.trim() || null;
+  const schoolGradeId = (formData.get("schoolGradeId") as string)?.trim() || null;
 
   if (!title || !dateStr) throw new Error("Title and Date are required");
 
@@ -93,15 +102,19 @@ export async function createEvent(formData: FormData) {
       title,
       description,
       date: new Date(dateStr),
+      endDate: endDateStr ? new Date(endDateStr) : null,
       duration: durationStr ? parseInt(durationStr) : null,
       type,
-      courseId: courseId === "general" ? null : courseId,
+      status,
+      priority,
+      color,
+      courseId: courseId === "general" || !courseId ? null : courseId,
+      schoolGradeId: schoolGradeId === "none" || !schoolGradeId ? null : schoolGradeId,
       teacherId: userId
     }
   });
 
-  revalidatePath("/dashboard/admin/calendar");
-  revalidatePath("/dashboard/calendar");
+  revalidatePath("/dashboard", "layout");
 }
 
 // Delete event
@@ -111,6 +124,5 @@ export async function deleteEvent(eventId: string) {
   
   await prisma.event.delete({ where: { id: eventId } });
   
-  revalidatePath("/dashboard/admin/calendar");
-  revalidatePath("/dashboard/calendar");
+  revalidatePath("/dashboard", "layout");
 }
