@@ -15,7 +15,7 @@ import {
   Cell,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrainCircuit, TrendingUp, TrendingDown, Minus, Target, Award, ListChecks } from "lucide-react";
+import { BrainCircuit, TrendingUp, TrendingDown, Minus, Target, Award, ListChecks, BarChart as BarChartIcon } from "lucide-react";
 
 export interface TestPerformanceData {
   trendData: { name: string; percentage: number; date: string }[];
@@ -228,7 +228,7 @@ export function TestPerformanceCharts({ data }: { data: TestPerformanceData }) {
           <Card className="border border-slate-200 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-600 flex items-center gap-2">
-                <BarChart size={16} className="text-amber-500" /> Grade Distribution
+                <BarChartIcon size={16} className="text-amber-500" /> Grade Distribution
               </CardTitle>
             </CardHeader>
             <CardContent>

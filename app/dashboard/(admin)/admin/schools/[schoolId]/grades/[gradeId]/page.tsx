@@ -8,6 +8,7 @@ import { BulkUploadStudents } from "./BulkUploadStudents";
 import { DeleteStudentButton } from "./DeleteStudentButton";
 import { PasswordVisibilityToggle } from "./PasswordVisibilityToggle";
 import { DownloadRosterButton } from "./DownloadRosterButton";
+import { EnrolledStudentList } from "./EnrolledStudentList";
 
 export default async function GradeDetailsPage({ params }: { params: Promise<{ schoolId: string; gradeId: string }> }) {
   const session = await auth();
@@ -26,6 +27,12 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
         orderBy: { name: 'asc' }
       }
     }
+  });
+
+  const allSchoolGrades = await prisma.schoolGrade.findMany({
+    where: { schoolId: resolvedParams.schoolId },
+    select: { id: true, gradeName: true, schoolId: true },
+    orderBy: { gradeName: 'asc' }
   });
 
   if (!grade) {
@@ -69,51 +76,13 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
           gradeName={grade.gradeName} 
         />
 
-          {/* Student List */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-500" /> Enrolled Students
-              </h2>
-              <div className="flex items-center gap-2">
-                <DownloadRosterButton students={grade.students} gradeName={grade.gradeName} />
-                <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                  {grade.students.length} Total
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-2">
-              {grade.students.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6">
-                  <GraduationCap className="w-12 h-12 text-slate-300 mb-3" />
-                  <p className="text-slate-500 text-sm">No students added yet. Use the bulk upload tool above.</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-100">
-                  {grade.students.map(student => (
-                    <div key={student.id} className="p-4 hover:bg-slate-50 transition-colors flex justify-between items-center rounded-xl group">
-                      <div>
-                        <p className="font-bold text-slate-900">{student.name}</p>
-                        <p className="text-xs text-slate-500 font-mono mt-0.5">{student.studentId}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <PasswordVisibilityToggle plainPassword={(student as any).plainPassword} />
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <DeleteStudentButton 
-                            studentId={student.id}
-                            schoolId={grade.schoolId}
-                            gradeId={grade.id}
-                            studentName={student.name!}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-        </div>
+        <EnrolledStudentList 
+          students={grade.students} 
+          gradeName={grade.gradeName} 
+          schoolId={grade.schoolId} 
+          gradeId={grade.id} 
+          allSchoolGrades={allSchoolGrades} 
+        />
       </div>
     </div>
   );

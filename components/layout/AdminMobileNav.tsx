@@ -6,23 +6,23 @@ import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
-  ClipboardCheck,
   BookOpen,
   FileCheck2,
   LogOut,
   CalendarDays,
   Building,
   FileText,
+  PlaySquare,
+  UserCheck,
 } from "lucide-react";
 
 const links = [
   { href: "/dashboard/admin", label: "Home", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/admin/schools", label: "Schools", icon: Building },
   { href: "/dashboard/admin/students", label: "Students", icon: Users },
-  { href: "/dashboard/admin/attendance", label: "Attend", icon: ClipboardCheck },
-  { href: "/dashboard/admin/assignments", label: "Grade", icon: FileCheck2 },
+  { href: "/dashboard/admin/attendance", label: "Attendance", icon: UserCheck },
+  { href: "/dashboard/admin/assignments", label: "Grade Submissions", icon: FileCheck2 },
   { href: "/dashboard/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/dashboard/admin/tests", label: "Tests", icon: FileText },
   { href: "/dashboard/admin/calendar", label: "Calendar", icon: CalendarDays },
 ];
 

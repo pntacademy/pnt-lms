@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getStudentTests } from "@/app/actions/tests";
-import { FileText, CheckCircle, BookOpen, Clock, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { getStudentTests, markTestsAsVisited } from "@/app/actions/tests";
+import { FileText, CheckCircle, BookOpen, Clock, Play, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 type StudentTest = Awaited<ReturnType<typeof getStudentTests>>[0];
@@ -11,22 +12,29 @@ export default function StudentTestsPage() {
   const [tests, setTests] = useState<StudentTest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const router = useRouter();
+
   useEffect(() => {
     getStudentTests().then((data) => {
       setTests(data);
       setIsLoading(false);
     });
-  }, []);
+    // Clear notification dot
+    markTestsAsVisited().then(() => router.refresh()).catch(console.error);
+  }, [router]);
 
   return (
     <div className="min-h-full p-4 md:p-8 max-w-6xl mx-auto space-y-8 font-sans">
       <header className="mb-8">
+        <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
+          <ArrowLeft size={16} /> Back to My School
+        </Link>
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
           <FileText size={36} className="text-amber-500" strokeWidth={2.5} />
           My Tests
         </h1>
         <p className="mt-2 text-sm font-bold text-slate-500 uppercase tracking-widest">
-          AI-Generated Assignments & Exams
+          Test your knowledge here
         </p>
       </header>
 
@@ -52,16 +60,14 @@ export default function StudentTestsPage() {
             return (
               <div
                 key={test.id}
-                className={`bg-white border-2 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col ${
-                  isCompleted ? "border-emerald-100" : "border-slate-100 hover:border-amber-200"
-                }`}
+                className={`bg-white border-2 rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col ${isCompleted ? "border-emerald-100" : "border-slate-100 hover:border-amber-200"
+                  }`}
               >
                 <div
-                  className={`h-2 w-full ${
-                    isCompleted
+                  className={`h-2 w-full ${isCompleted
                       ? "bg-gradient-to-r from-emerald-400 to-teal-500"
                       : "bg-gradient-to-r from-orange-400 to-amber-500"
-                  }`}
+                    }`}
                 />
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-2 mb-3">

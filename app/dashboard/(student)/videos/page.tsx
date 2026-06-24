@@ -1,24 +1,75 @@
-import { Film, PlayCircle, Calendar, Info } from "lucide-react";
+import { ArrowLeft, Film, PlayCircle, Calendar, Info } from "lucide-react";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { NotificationClearer } from "@/components/layout/NotificationClearer";
+import { VideoNotes } from "@/components/ui/VideoNotes";
 
 export default async function StudentVideosPage({
   searchParams,
 }: {
   searchParams: Promise<{ v?: string }>;
 }) {
+  const session = await auth();
+
   const resolvedParams = await searchParams;
   const selectedVideoId = resolvedParams.v;
 
-  const videos = await prisma.globalVideo.findMany({
+  const schoolGradeId = (session?.user as any)?.schoolGradeId;
+
+  const globalVideos = await prisma.globalVideo.findMany({
+    where: {
+      OR: [
+        { schoolGradeId: schoolGradeId || "NO_GRADE_MATCH" },
+        { schoolGradeId: null }
+      ]
+    },
     orderBy: { createdAt: "desc" }
   });
+
+  const materials = schoolGradeId ? await prisma.gradeMaterial.findMany({
+    where: { 
+      gradeId: schoolGradeId,
+      videoUrl: { not: null }
+    },
+    orderBy: { createdAt: "desc" }
+  }) : [];
+
+  const extractDriveId = (url: string) => {
+    const match = url.match(/[-\w]{25,}/);
+    return match ? match[0] : url;
+  };
+
+  const videos = [
+    ...globalVideos.map(v => ({
+      id: v.id,
+      title: v.title,
+      description: v.description,
+      driveFileId: v.driveFileId,
+      createdAt: v.createdAt,
+      type: "Global"
+    })),
+    ...materials.filter(m => m.videoUrl).map(m => ({
+      id: m.id,
+      title: m.title,
+      description: m.description,
+      driveFileId: extractDriveId(m.videoUrl!),
+      createdAt: m.createdAt,
+      type: "Material"
+    }))
+  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const activeVideo = selectedVideoId ? videos.find(v => v.id === selectedVideoId) : null;
 
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-7xl mx-auto flex flex-col">
+      <NotificationClearer type="videos" />
       <header className="mb-6 shrink-0">
+        {!activeVideo && (
+          <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
+            <ArrowLeft size={16} /> Back to My School
+          </Link>
+        )}
         <h1 className="text-2xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
           <Film size={30} className="text-indigo-500" strokeWidth={2.5} />
           Videos
@@ -71,91 +122,75 @@ export default async function StudentVideosPage({
           ))}
         </div>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-6 flex-1">
-          {/* Main Video Player */}
-          <div className="flex-1 flex flex-col gap-6">
-            <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
-              {activeVideo ? (
-                <iframe
-                  src={`https://drive.google.com/file/d/${activeVideo.driveFileId}/preview`}
-                  className="w-full h-full border-0 absolute inset-0"
-                  allowFullScreen
-                  allow="autoplay; fullscreen"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-slate-500">
-                  <p className="font-bold">Video unavailable</p>
-                </div>
-              )}
-            </div>
+        <div className="flex flex-col flex-1">
+          {/* Back Button */}
+          <div className="mb-6">
+            <Link
+              href="/dashboard/videos"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all"
+            >
+              <ArrowLeft size={16} /> Back to Videos
+            </Link>
+          </div>
 
-            {/* Video Details */}
-            {activeVideo && (
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight">
-                    {activeVideo.title}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-100 pb-4">
-                  <Calendar size={14} />
-                  Uploaded on {new Date(activeVideo.createdAt).toLocaleDateString()}
-                </div>
+          <div className="flex flex-col lg:flex-row gap-6">
 
-                {activeVideo.description ? (
-                  <p className="text-base text-slate-600 font-medium leading-relaxed">
-                    {activeVideo.description}
-                  </p>
+            {/* Main Video Player & Details (Left Column) */}
+            <div className="flex-1 flex flex-col gap-6 min-w-0">
+
+              <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
+                {activeVideo ? (
+                  <iframe
+                    src={`https://drive.google.com/file/d/${activeVideo.driveFileId}/preview`}
+                    className="w-full h-full border-0 absolute inset-0"
+                    allowFullScreen
+                    allow="autoplay; fullscreen"
+                  />
                 ) : (
-                  <div className="flex items-center gap-2 text-sm text-slate-400 font-medium italic bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <Info size={16} /> No description provided for this video.
+                  <div className="flex items-center justify-center h-full text-slate-500">
+                    <p className="font-bold">Video unavailable</p>
                   </div>
                 )}
               </div>
-            )}
+
+              {activeVideo && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight">
+                      {activeVideo.title}
+                    </h2>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-100 pb-4">
+                    <Calendar size={14} />
+                    Uploaded on{" "}
+                    {new Date(activeVideo.createdAt).toLocaleDateString()}
+                  </div>
+
+                  {activeVideo.description ? (
+                    <p className="text-base text-slate-600 font-medium leading-relaxed">
+                      {activeVideo.description}
+                    </p>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-slate-400 font-medium italic bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <Info size={16} />
+                      No description provided for this video.
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+
+            {/* Video Notes (Right Column) */}
+            <div className="w-full lg:w-[350px] xl:w-[400px] shrink-0 flex flex-col h-full">
+              {activeVideo && (
+                <VideoNotes videoId={activeVideo.id} videoTitle={activeVideo.title} />
+              )}
+            </div>
+
           </div>
 
-          {/* Video Playlist Sidebar */}
-          <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="font-black text-sm uppercase tracking-widest text-slate-800">
-                More Videos
-              </h3>
-              <Link href="/dashboard/videos" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest">
-                View All
-              </Link>
-            </div>
-            <div className="flex flex-col gap-3">
-              {videos.map((video) => {
-                const isActive = activeVideo?.id === video.id;
-                return (
-                  <Link
-                    key={video.id}
-                    href={`/dashboard/videos?v=${video.id}`}
-                    className={`flex items-start gap-4 p-3 rounded-2xl border transition-all group ${isActive
-                      ? "bg-indigo-50 border-indigo-200 shadow-sm"
-                      : "bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md"
-                      }`}
-                  >
-                    <div className={`w-24 aspect-video shrink-0 rounded-xl flex items-center justify-center transition-colors ${isActive ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600"
-                      }`}>
-                      <PlayCircle size={24} strokeWidth={isActive ? 2 : 1.5} />
-                    </div>
-
-                    <div className="flex-1 min-w-0 py-1">
-                      <h4 className={`font-black text-sm leading-tight mb-1 line-clamp-2 ${isActive ? "text-indigo-900" : "text-slate-800 group-hover:text-indigo-700"
-                        }`}>
-                        {video.title}
-                      </h4>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                        <Calendar size={10} /> {new Date(video.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
         </div>
       )}
     </div>

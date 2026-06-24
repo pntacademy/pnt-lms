@@ -6,7 +6,6 @@ import autoTable from "jspdf-autotable";
 
 interface CourseAnalytic {
   course: { title: string };
-  attendance: { pct: number; present: number; total: number };
   assignments: { avgGrade: number | null; graded: number; total: number; submitted: number; pending: number };
 }
 
@@ -14,11 +13,10 @@ interface DownloadReportBtnProps {
   studentName: string;
   studentId?: string | null;
   overallGrade: number | null;
-  overallAttendance: number;
   courseAnalytics: CourseAnalytic[];
 }
 
-export function DownloadReportBtn({ studentName, studentId, overallGrade, overallAttendance, courseAnalytics }: DownloadReportBtnProps) {
+export function DownloadReportBtn({ studentName, studentId, overallGrade, courseAnalytics }: DownloadReportBtnProps) {
   const handleDownload = () => {
     const doc = new jsPDF();
     
@@ -55,20 +53,18 @@ export function DownloadReportBtn({ studentName, studentId, overallGrade, overal
     doc.setFont("helvetica", "bold");
     doc.text("Overall Performance Summary", 18, 83);
     doc.setFont("helvetica", "normal");
-    doc.text(`Total Attendance: ${overallAttendance}%`, 18, 92);
-    doc.text(`Overall Average Grade: ${overallGrade !== null ? overallGrade + '/100' : 'N/A'}`, 105, 92);
+    doc.text(`Overall Average Grade: ${overallGrade !== null ? overallGrade + '/100' : 'N/A'}`, 18, 92);
 
     // Course Breakdown Table
     const tableData = courseAnalytics.map(c => [
       c.course.title,
-      `${c.attendance.pct}% (${c.attendance.present}/${c.attendance.total})`,
       c.assignments.avgGrade !== null ? `${c.assignments.avgGrade}/100` : 'N/A',
       `${c.assignments.submitted}/${c.assignments.total}`
     ]);
 
     autoTable(doc, {
       startY: 110,
-      head: [['Course Title', 'Attendance', 'Avg Grade', 'Tasks Submitted']],
+      head: [['Course Title', 'Avg Grade', 'Tasks Submitted']],
       body: tableData,
       theme: 'grid',
       headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold' },

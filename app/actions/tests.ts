@@ -4,13 +4,13 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// @ts-expect-error - Bypassing type check for local CommonJS import
 const pdfParse = require("pdf-parse/lib/pdf-parse.js");
+const mammoth = require("mammoth");
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function generateTestFromPdf(formData: FormData) {
+export async function generateTestFromFile(formData: FormData) {
   try {
     const session = await auth();
     if (!session?.user) throw new Error("Unauthorized");
@@ -24,23 +24,38 @@ export async function generateTestFromPdf(formData: FormData) {
       throw new Error("Missing required fields: file or title.");
     }
 
-    if (file.type !== "application/pdf") {
-      throw new Error("Invalid file type. Only PDF files are allowed.");
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain"
+    ];
+
+    if (!allowedTypes.includes(file.type) && !file.name.endsWith(".docx") && !file.name.endsWith(".txt") && !file.name.endsWith(".pdf")) {
+      throw new Error("Invalid file type. Only PDF, DOCX, and TXT files are allowed.");
     }
 
     if (file.size > 10 * 1024 * 1024) { // 10MB limit
       throw new Error("File is too large. Maximum size is 10MB.");
     }
 
-    // 1. Extract text from PDF
+    // 1. Extract text from file
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const pdfData = await pdfParse(buffer);
-    const extractedText = pdfData.text;
+    let extractedText = "";
+
+    if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+      const pdfData = await pdfParse(buffer);
+      extractedText = pdfData.text;
+    } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.endsWith(".docx")) {
+      const result = await mammoth.extractRawText({ buffer });
+      extractedText = result.value;
+    } else if (file.type === "text/plain" || file.name.endsWith(".txt")) {
+      extractedText = buffer.toString('utf-8');
+    }
 
     if (!extractedText || extractedText.trim().length === 0) {
-      throw new Error("Could not extract any text from the PDF.");
+      throw new Error("Could not extract any text from the document.");
     }
 
     // 2. Call Gemini API
@@ -129,12 +144,15 @@ ${extractedText}
       throw new Error("Extracted questions failed validation. Ensure they have at least 2 options and a correct answer.");
     }
 
+    const schoolGradeId = formData.get("schoolGradeId") as string;
+
     // 4. Save to Database
     const newTest = await prisma.test.create({
       data: {
         title,
         description,
         courseId: courseId || null,
+        schoolGradeId: schoolGradeId || null,
         totalMarks,
         questions: {
           create: validQuestions,
@@ -160,6 +178,7 @@ export async function getAllTests() {
     orderBy: { createdAt: "desc" },
     include: {
       course: { select: { title: true } },
+      schoolGrade: { select: { gradeName: true, school: { select: { name: true } } } },
       _count: { select: { questions: true } },
     },
   });
@@ -267,9 +286,16 @@ export async function getStudentTests() {
   if (!session?.user) throw new Error("Unauthorized");
 
   const userId = session.user.id;
+  const schoolGradeId = (session.user as any).schoolGradeId;
 
   const tests = await prisma.test.findMany({
-    where: { isPublished: true },
+    where: {
+      isPublished: true,
+      OR: [
+        { schoolGradeId: schoolGradeId || "NO_GRADE_MATCH" },
+        { schoolGradeId: null } // allow global tests
+      ]
+    },
     orderBy: { createdAt: "desc" },
     include: {
       course: { select: { title: true } },
@@ -287,15 +313,36 @@ export async function getStudentTests() {
   }));
 }
 
+// Mark tests page as visited to clear the notification dot
+export async function markTestsAsVisited() {
+  const session = await auth();
+  if (!session?.user) return;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { lastTestsVisit: new Date() }
+  });
+
+  revalidatePath("/dashboard", "layout");
+}
+
 // Student: Get Test for Exam (Strips correct answers)
 export async function getStudentTestById(testId: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
   const userId = session.user.id;
+  const schoolGradeId = (session.user as any).schoolGradeId;
 
   const test = await prisma.test.findUnique({
-    where: { id: testId, isPublished: true },
+    where: {
+      id: testId,
+      isPublished: true,
+      OR: [
+        { schoolGradeId: schoolGradeId || "NO_GRADE_MATCH" },
+        { schoolGradeId: null }
+      ]
+    },
     include: {
       course: { select: { title: true } },
       questions: { orderBy: { createdAt: "asc" } },
@@ -328,7 +375,7 @@ export async function getStudentTestById(testId: string) {
 // Student: Submit Test Attempt
 export async function submitTestAttempt(testId: string, studentAnswers: Record<string, string>) {
   const session = await auth();
-  if (!session?.user) throw new Error("Unauthorized");
+  if (!session?.user?.id) throw new Error("Unauthorized");
 
   const userId = session.user.id;
 
@@ -354,7 +401,7 @@ export async function submitTestAttempt(testId: string, studentAnswers: Record<s
     if (studentAnswer) {
       const studentText = studentAnswer.trim().toLowerCase();
       let correctText = q.correctAnswer.trim().toLowerCase();
-      
+
       // If the AI or admin set the correct answer to just "A", "B", "C", or "D"
       if (correctText === "a" || correctText === "option a") correctText = q.optionA.trim().toLowerCase();
       if (correctText === "b" || correctText === "option b") correctText = q.optionB.trim().toLowerCase();
@@ -380,6 +427,42 @@ export async function submitTestAttempt(testId: string, studentAnswers: Record<s
 
   revalidatePath("/dashboard/tests");
   revalidatePath(`/dashboard/tests/${testId}`);
+
+  return { success: true, score, totalMarks: test.totalMarks };
+}
+
+// Student: Grade Practice Test (Does not save to DB)
+export async function gradePracticeTest(testId: string, studentAnswers: Record<string, string>) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // Verify test exists and is published
+  const test = await prisma.test.findUnique({
+    where: { id: testId, isPublished: true },
+    include: { questions: true },
+  });
+
+  if (!test) throw new Error("Test not found.");
+
+  // Calculate score securely on the backend
+  let score = 0;
+  for (const q of test.questions) {
+    const studentAnswer = studentAnswers[q.id];
+    if (studentAnswer) {
+      const studentText = studentAnswer.trim().toLowerCase();
+      let correctText = q.correctAnswer.trim().toLowerCase();
+
+      // If the AI or admin set the correct answer to just "A", "B", "C", or "D"
+      if (correctText === "a" || correctText === "option a") correctText = q.optionA.trim().toLowerCase();
+      if (correctText === "b" || correctText === "option b") correctText = q.optionB.trim().toLowerCase();
+      if (correctText === "c" || correctText === "option c") correctText = q.optionC.trim().toLowerCase();
+      if (correctText === "d" || correctText === "option d") correctText = q.optionD.trim().toLowerCase();
+
+      if (studentText === correctText) {
+        score += q.marks;
+      }
+    }
+  }
 
   return { success: true, score, totalMarks: test.totalMarks };
 }

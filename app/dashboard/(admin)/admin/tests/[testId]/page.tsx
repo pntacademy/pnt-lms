@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition, use } from "react";
+import { useRouter } from "next/navigation";
 import { getTestById, updateQuestion, deleteQuestion } from "@/app/actions/tests";
 import Link from "next/link";
 import { ChevronLeft, Edit3, Trash2, Check, X, AlertCircle } from "lucide-react";
@@ -14,6 +15,7 @@ export default function AdminTestReviewPage({
   params: Promise<{ testId: string }>;
 }) {
   const { testId } = use(params);
+  const router = useRouter();
 
   const [test, setTest] = useState<TestData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,12 +59,12 @@ export default function AdminTestReviewPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/admin/tests"
+          <button
+            onClick={() => router.back()}
             className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors shrink-0"
           >
             <ChevronLeft size={20} strokeWidth={2.5} />
-          </Link>
+          </button>
           <div>
             <h1 className="text-2xl md:text-3xl font-black uppercase text-slate-800 tracking-tight">
               Review Test Questions

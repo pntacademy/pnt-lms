@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import {
   BookOpen, Plus, X, Trash2, Search, Users,
-  ChevronRight, Link2, ClipboardCheck,
+  ChevronRight, Link2,
   UserPlus, UserMinus, Info, List, Clock, PlayCircle, Video,
 } from "lucide-react";
 import {
@@ -198,7 +198,6 @@ export default function AdminCoursesPage() {
                 <div className="flex items-center gap-3 text-xs font-bold text-slate-500 mb-4 flex-wrap">
                   <span className="flex items-center gap-1"><List size={13} /> {course._count.topics} topics</span>
                   <span className="flex items-center gap-1"><Users size={13} /> {course._count.enrollments} students</span>
-                  <span className="flex items-center gap-1"><ClipboardCheck size={13} /> {course._count.attendances} sessions</span>
                 </div>
 
                 {course.driveLink && (

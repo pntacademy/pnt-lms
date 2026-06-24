@@ -23,17 +23,13 @@ export default async function AdminPage() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link href="/dashboard/admin/courses" className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-blue-500 to-indigo-600 border border-indigo-700 rounded-xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all group h-full min-h-[140px]">
+          <Link href="/dashboard/admin/schools/courses" className="flex flex-col items-center justify-center gap-2 p-6 bg-gradient-to-br from-blue-500 to-indigo-600 border border-indigo-700 rounded-xl shadow-md hover:-translate-y-1 hover:shadow-lg transition-all group h-full min-h-[140px]">
             <PlusCircle size={32} strokeWidth={2.5} className="text-white" />
             <span className="font-black uppercase text-sm text-white">Manage Courses</span>
           </Link>
           <Link href="/dashboard/admin/assignments" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
             <CheckSquare size={32} strokeWidth={2.5} className="text-slate-800" />
             <span className="font-black uppercase text-sm text-slate-800">Grade Assignments</span>
-          </Link>
-          <Link href="/dashboard/admin/attendance" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
-            <Users size={32} strokeWidth={2.5} className="text-slate-800" />
-            <span className="font-black uppercase text-sm text-slate-800">Mark Attendance</span>
           </Link>
           <Link href="/dashboard/admin/students" className="flex flex-col items-center justify-center gap-2 p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 hover:-translate-y-1 hover:shadow-lg transition-all h-full min-h-[140px]">
             <BarChart size={32} strokeWidth={2.5} className="text-slate-800" />

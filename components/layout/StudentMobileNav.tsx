@@ -3,20 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Home, BookOpen, FileText, ClipboardCheck, Calendar, Briefcase, LogOut, BarChart, Building, Film } from "lucide-react";
+import { Home, BookOpen, FileText, Calendar, Briefcase, LogOut, BarChart, Building, Film } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Home", icon: Home, exact: true },
   { href: "/dashboard/school", label: "School", icon: Building },
-  { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
-  { href: "/dashboard/videos", label: "Videos", icon: Film },
-  { href: "/dashboard/assignments", label: "Tasks", icon: FileText },
-  { href: "/dashboard/tests", label: "Tests", icon: FileText },
-  { href: "/dashboard/attendance", label: "Attend", icon: ClipboardCheck },
+  // { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
 ];
 
-export function StudentMobileNav() {
+export function StudentMobileNav({ hasNewSchool = false, hasNewCalendar = false }: { hasNewSchool?: boolean, hasNewCalendar?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -24,6 +20,10 @@ export function StudentMobileNav() {
       {links.map((link) => {
         const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
         const Icon = link.icon;
+        const showNotification = 
+          (link.label === "School" && hasNewSchool) ||
+          (link.label === "Calendar" && hasNewCalendar);
+
         return (
           <Link
             key={link.href}
@@ -34,11 +34,19 @@ export function StudentMobileNav() {
                 : "bg-transparent border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            <Icon
-              size={22}
-              strokeWidth={isActive ? 3 : 2}
-              className={isActive ? "text-slate-800" : ""}
-            />
+            <div className="relative flex flex-col items-center justify-center">
+              <Icon
+                size={22}
+                strokeWidth={isActive ? 3 : 2}
+                className={isActive ? "text-slate-800" : ""}
+              />
+              {showNotification && (
+                <span className="absolute -top-1 -right-2 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border border-white"></span>
+                </span>
+              )}
+            </div>
             <span className={`text-[9px] mt-1 uppercase font-black tracking-wider ${isActive ? "text-slate-800" : ""}`}>
               {link.label}
             </span>

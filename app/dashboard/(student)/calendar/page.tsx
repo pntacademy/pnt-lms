@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon, Clock, Users, BookOpen, AlertCircle } from "lucide-react";
 import { getEvents } from "@/app/actions/calendar";
 import FullCalendarWrapper, { CalendarEvent } from "@/components/calendar/FullCalendarWrapper";
+import { NotificationClearer } from "@/components/layout/NotificationClearer";
 
 type Event = CalendarEvent;
 
@@ -27,6 +28,7 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+      <NotificationClearer type="calendar" />
       <header className="mb-8 flex items-center gap-3">
         <div className="w-14 h-14 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-center">
           <CalendarIcon size={28} className="text-red-500" strokeWidth={2.5} />

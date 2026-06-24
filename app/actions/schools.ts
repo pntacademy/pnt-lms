@@ -141,3 +141,49 @@ export async function deleteSchool(schoolId: string) {
 
   revalidatePath("/dashboard/admin/schools");
 }
+
+export async function bulkUpdateSchoolGrade(studentIds: string[], newGradeId: string, schoolId: string, currentGradeId: string) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  await prisma.user.updateMany({
+    where: {
+      id: { in: studentIds },
+      schoolId: schoolId,
+    },
+    data: {
+      schoolGradeId: newGradeId,
+    },
+  });
+
+  revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${currentGradeId}`);
+  revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${newGradeId}`);
+}
+
+export async function bulkUnenrollStudents(studentIds: string[], schoolId: string, currentGradeId: string) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  // Disconnect from the grade (set schoolGradeId to null)
+  await prisma.user.updateMany({
+    where: {
+      id: { in: studentIds },
+      schoolId: schoolId,
+    },
+    data: {
+      schoolGradeId: null,
+    },
+  });
+
+  revalidatePath(`/dashboard/admin/schools/${schoolId}/grades/${currentGradeId}`);
+}
+
+export async function getAllSchoolGrades() {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") throw new Error("Unauthorized");
+
+  return prisma.schoolGrade.findMany({
+    include: { school: { select: { name: true } } },
+    orderBy: { school: { name: "asc" } }
+  });
+}

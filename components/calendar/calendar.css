@@ -23,12 +23,12 @@
   text-transform: uppercase !important;
   letter-spacing: -0.025em !important;
   color: #1e293b !important; /* slate-800 */
-  font-size: 1.5rem !important;
+  font-size: 1.15rem !important;
 }
 
 @media (min-width: 768px) {
   .fc-toolbar-title {
-    font-size: 2rem !important;
+    font-size: 1.5rem !important;
   }
 }
 
@@ -37,9 +37,9 @@
   text-transform: uppercase !important;
   font-weight: 900 !important;
   letter-spacing: 0.05em !important;
-  font-size: 0.75rem !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: 0.75rem !important; /* rounded-xl */
+  font-size: 0.65rem !important;
+  padding: 0.4rem 0.75rem !important;
+  border-radius: 0.5rem !important; /* rounded-lg */
   transition: all 0.2s ease !important;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
@@ -72,11 +72,11 @@
 /* Header Cells */
 .fc-col-header-cell {
   background-color: var(--fc-neutral-bg-color) !important;
-  padding: 0.75rem 0 !important;
+  padding: 0.5rem 0 !important;
 }
 
 .fc-col-header-cell-cushion {
-  font-size: 0.75rem !important;
+  font-size: 0.65rem !important;
   font-weight: 900 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
@@ -88,7 +88,8 @@
 .fc-daygrid-day-number {
   font-weight: 700 !important;
   color: #334155 !important; /* slate-700 */
-  padding: 0.5rem !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.8rem !important;
   text-decoration: none !important;
 }
 
@@ -139,23 +140,25 @@
 
 /* List View Specifics */
 .fc-list {
-  border-radius: 1rem !important;
+  border-radius: 0.75rem !important;
   border: 1px solid var(--fc-border-color) !important;
 }
 
 .fc-list-day-cushion {
   background-color: var(--fc-neutral-bg-color) !important;
-  padding: 0.75rem 1rem !important;
+  padding: 0.5rem 0.75rem !important;
 }
 
 .fc-list-day-text {
   font-weight: 900 !important;
+  font-size: 0.8rem !important;
   text-transform: uppercase !important;
   color: #1e293b !important;
 }
 
 .fc-list-day-side-text {
   font-weight: 700 !important;
+  font-size: 0.75rem !important;
   color: #64748b !important;
 }
 
@@ -165,19 +168,21 @@
 
 .fc-list-event-time {
   font-weight: 700 !important;
+  font-size: 0.7rem !important;
   color: #64748b !important;
 }
 
 .fc-list-event-title {
   font-weight: 800 !important;
+  font-size: 0.75rem !important;
   color: #334155 !important;
 }
 
 .fc-list-event-dot {
-  border-width: 4px !important;
+  border-width: 3px !important;
 }
 
 /* Make calendar scrollable nicely on mobile */
 .fc-view-harness {
-  min-height: 400px;
+  min-height: 350px;
 }

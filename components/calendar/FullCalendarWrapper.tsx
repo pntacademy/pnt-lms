@@ -32,7 +32,7 @@ interface FullCalendarWrapperProps {
   height?: string;
 }
 
-export default function FullCalendarWrapper({ events, onEventClick, height = "800px" }: FullCalendarWrapperProps) {
+export default function FullCalendarWrapper({ events, onEventClick, height = "550px" }: FullCalendarWrapperProps) {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   // Map our events to FullCalendar event objects
@@ -74,12 +74,12 @@ export default function FullCalendarWrapper({ events, onEventClick, height = "80
 
   return (
     <>
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 max-w-4xl mx-auto">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
           initialView="dayGridMonth"
           headerToolbar={{
-            left: "prev,next today",
+            left: "prev,next",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
           }}

@@ -3,13 +3,13 @@
 import { useState, useEffect, useTransition } from "react";
 import {
   Users, Search, Plus, X, Trash2, GraduationCap,
-  CheckCircle2, ClipboardCheck, BookOpen, ChevronRight,
+  CheckCircle2, BookOpen, ChevronRight,
   Phone, Building2, Calendar, Download, ChevronDown
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getAllStudents, registerStudent, deleteStudent, updateStudentStatus } from "@/app/actions/students";
-import { getCourses } from "@/app/actions/attendance";
+import { getAllCourses as getCourses } from "@/app/actions/courses";
 import { StudentStatus } from "@prisma/client";
 
 type Student = Awaited<ReturnType<typeof getAllStudents>>[0];
@@ -19,6 +19,9 @@ export default function AdminStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [search, setSearch] = useState("");
+  const [filterClass, setFilterClass] = useState("");
+  const [filterSchool, setFilterSchool] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -36,15 +39,25 @@ export default function AdminStudentsPage() {
   // eslint-disable-next-line
   useEffect(() => { load(); }, []);
 
+  const uniqueClasses = Array.from(new Set(students.map(s => s.className).filter(Boolean))) as string[];
+  const uniqueSchools = Array.from(new Set(students.map(s => s.instituteName).filter(Boolean))) as string[];
+  const uniqueStatuses = Array.from(new Set(students.map(s => s.studentStatus).filter(Boolean))) as string[];
+
   const filtered = students.filter((s) => {
     const q = search.toLowerCase();
-    return (
+    const matchSearch = q === "" || (
       s.name?.toLowerCase().includes(q) ||
       s.studentId?.toLowerCase().includes(q) ||
       s.className?.toLowerCase().includes(q) ||
       s.instituteName?.toLowerCase().includes(q) ||
       s.studentStatus?.toLowerCase().includes(q)
     );
+
+    const matchClass = filterClass === "" || s.className === filterClass;
+    const matchSchool = filterSchool === "" || s.instituteName === filterSchool;
+    const matchStatus = filterStatus === "" || s.studentStatus === filterStatus;
+
+    return matchSearch && matchClass && matchSchool && matchStatus;
   });
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,14 +86,13 @@ export default function AdminStudentsPage() {
     doc.text(`Generated: ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · Total: ${students.length} students`, 14, 26);
     autoTable(doc, {
       startY: 32,
-      head: [["Roll ID", "Name", "Class", "School", "Contact", "Attendance", "Avg Score"]],
+      head: [["Roll ID", "Name", "Class", "School", "Contact", "Avg Score"]],
       body: students.map(s => [
         s.studentId || "—",
         s.name || "—",
         s.className || "—",
         s.instituteName || "—",
         s.contactNumber || "—",
-        s.attendancePct !== null ? `${s.attendancePct}%` : "—",
         s.avgScore !== null ? `${s.avgScore}/100` : "—",
       ]),
       theme: "grid",
@@ -155,16 +167,62 @@ export default function AdminStudentsPage() {
         </div>
       )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-3.5 text-slate-400" size={20} />
-        <input
-          type="text"
-          placeholder="Search by name, roll ID, class, or school..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-12 pr-4 h-12 rounded-xl border border-slate-200 bg-white text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
-        />
+      {/* Search & Filters */}
+      <div className="space-y-4">
+        <div className="relative">
+          <Search className="absolute left-4 top-3.5 text-slate-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search by name, roll ID, class, or school..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-12 pr-4 h-12 rounded-xl border border-slate-200 bg-white text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="relative">
+            <select
+              value={filterClass}
+              onChange={e => setFilterClass(e.target.value)}
+              className="appearance-none w-full h-11 pl-4 pr-10 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer shadow-sm"
+            >
+              <option value="">All Classes</option>
+              {uniqueClasses.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+              <ChevronDown size={16} />
+            </div>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filterSchool}
+              onChange={e => setFilterSchool(e.target.value)}
+              className="appearance-none w-full h-11 pl-4 pr-10 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer shadow-sm"
+            >
+              <option value="">All Schools</option>
+              {uniqueSchools.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+              <ChevronDown size={16} />
+            </div>
+          </div>
+
+          <div className="relative">
+            <select
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              className="appearance-none w-full h-11 pl-4 pr-10 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer shadow-sm"
+            >
+              <option value="">All Statuses</option>
+              {uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+              <ChevronDown size={16} />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Student Table */}
@@ -188,7 +246,6 @@ export default function AdminStudentsPage() {
                   <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest">Student</th>
                   <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest hidden sm:table-cell">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500 tracking-widest hidden md:table-cell">School</th>
-                  <th className="px-4 py-3 text-center text-xs font-black uppercase text-slate-500 tracking-widest hidden lg:table-cell">Attendance</th>
                   <th className="px-4 py-3 text-center text-xs font-black uppercase text-slate-500 tracking-widest hidden lg:table-cell">Avg Score</th>
                   <th className="px-4 py-3 text-right text-xs font-black uppercase text-slate-500 tracking-widest">Actions</th>
                 </tr>
@@ -223,19 +280,6 @@ export default function AdminStudentsPage() {
                     <td className="px-4 py-4 hidden md:table-cell">
                       <div className="text-sm font-medium text-slate-600">{student.instituteName || "—"}</div>
                       <div className="text-xs text-slate-400 mt-0.5">{student.className || "—"}</div>
-                    </td>
-                    <td className="px-4 py-4 text-center hidden lg:table-cell">
-                      {student.attendancePct !== null ? (
-                        <div className="inline-flex flex-col items-center">
-                          <span className={`text-lg font-black ${
-                            student.attendancePct >= 75 ? "text-green-600" :
-                            student.attendancePct >= 50 ? "text-amber-500" : "text-red-500"
-                          }`}>{student.attendancePct}%</span>
-                          <span className="text-[10px] text-slate-400">{student.totalAttendance} classes</span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-300 text-sm font-bold">—</span>
-                      )}
                     </td>
                     <td className="px-4 py-4 text-center hidden lg:table-cell">
                       {student.avgScore !== null ? (
@@ -374,13 +418,7 @@ export default function AdminStudentsPage() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-green-600">
-                    {selectedStudent.attendancePct !== null ? `${selectedStudent.attendancePct}%` : "—"}
-                  </div>
-                  <div className="text-xs font-black uppercase text-green-500 tracking-widest mt-1">Attendance</div>
-                </div>
+              <div className="grid grid-cols-1 gap-3">
                 <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
                   <div className="text-2xl font-black text-indigo-600">
                     {selectedStudent.avgScore !== null ? `${selectedStudent.avgScore}` : "—"}
@@ -466,11 +504,7 @@ export default function AdminStudentsPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-2 text-center bg-slate-50 border border-slate-100 rounded-xl p-3">
-                <div>
-                  <div className="text-lg font-black text-slate-700">{selectedStudent.totalAttendance}</div>
-                  <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center justify-center gap-1"><ClipboardCheck size={10} />Records</div>
-                </div>
+              <div className="grid grid-cols-1 gap-2 text-center bg-slate-50 border border-slate-100 rounded-xl p-3">
                 <div>
                   <div className="text-lg font-black text-slate-700">{selectedStudent.totalSubmissions}</div>
                   <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Submissions</div>
