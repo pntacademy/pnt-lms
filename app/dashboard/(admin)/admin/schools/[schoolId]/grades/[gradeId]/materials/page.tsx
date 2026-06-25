@@ -5,7 +5,6 @@ import { ArrowLeft, BookOpen, Video, FileText, Link as LinkIcon, Calendar, Film 
 import Link from "next/link";
 import { CreateMaterialForm } from "./CreateMaterialForm";
 import { DeleteMaterialButton } from "./DeleteMaterialButton";
-import { AdminVideosTab } from "./AdminVideosTab";
 import { AdminTestsTab } from "./AdminTestsTab";
 
 export default async function GradeMaterialsPage({ params, searchParams }: { params: Promise<{ schoolId: string; gradeId: string }>, searchParams: Promise<{ tab?: string }> }) {
@@ -146,11 +145,6 @@ export default async function GradeMaterialsPage({ params, searchParams }: { par
                 <CreateMaterialForm gradeId={grade.id} />
               </div>
             </div>
-          </div>
-
-          {/* ADMIN VIDEOS LOGIC */}
-          <div className="border-t-2 border-dashed border-slate-200 pt-10">
-            <AdminVideosTab schoolId={grade.schoolId} gradeId={grade.id} gradeName={grade.gradeName} schoolName={grade.school.name} />
           </div>
         </div>
       ) : (

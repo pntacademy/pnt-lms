@@ -1,4 +1,4 @@
-import { ArrowLeft, Film, PlayCircle, Calendar, Info } from "lucide-react";
+import { ArrowLeft, Film, PlayCircle, Calendar, Info, Link as LinkIcon, FileText, ExternalLink } from "lucide-react";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { auth } from "@/auth";
@@ -47,7 +47,9 @@ export default async function StudentVideosPage({
       description: v.description,
       driveFileId: v.driveFileId,
       createdAt: v.createdAt,
-      type: "Global"
+      type: "Global",
+      linkUrl: null,
+      fileUrl: null
     })),
     ...materials.filter(m => m.videoUrl).map(m => ({
       id: m.id,
@@ -55,7 +57,9 @@ export default async function StudentVideosPage({
       description: m.description,
       driveFileId: extractDriveId(m.videoUrl!),
       createdAt: m.createdAt,
-      type: "Material"
+      type: "Material",
+      linkUrl: m.linkUrl,
+      fileUrl: m.fileUrl
     }))
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
@@ -175,6 +179,34 @@ export default async function StudentVideosPage({
                     <div className="flex items-center gap-2 text-sm text-slate-400 font-medium italic bg-slate-50 p-4 rounded-xl border border-slate-100">
                       <Info size={16} />
                       No description provided for this video.
+                    </div>
+                  )}
+
+                  {(activeVideo.linkUrl || activeVideo.fileUrl) && (
+                    <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-6">
+                      {activeVideo.linkUrl && (
+                        <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl p-5">
+                          <h3 className="text-sm font-black text-blue-900 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <LinkIcon size={16} className="text-blue-500" /> Ask Doubt Form
+                          </h3>
+                          <p className="text-xs text-blue-700 mb-4 font-medium">Have questions? Fill out this form for support.</p>
+                          <a href={activeVideo.linkUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 w-full py-2.5 bg-blue-600 text-white rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition-colors shadow-sm">
+                            Open Form <ExternalLink size={14} />
+                          </a>
+                        </div>
+                      )}
+                      
+                      {activeVideo.fileUrl && (
+                        <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+                          <h3 className="text-sm font-black text-emerald-900 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <FileText size={16} className="text-emerald-500" /> References
+                          </h3>
+                          <p className="text-xs text-emerald-700 mb-4 font-medium">Download supplementary materials here.</p>
+                          <a href={activeVideo.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-600 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-700 transition-colors shadow-sm">
+                            <FileText size={14} /> Download File
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

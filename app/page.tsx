@@ -22,7 +22,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800 overflow-x-hidden relative font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] text-slate-900 selection:bg-gradient-to-br from-orange-300 to-amber-400 selection:text-slate-800 overflow-x-clip relative font-sans">
       
       {/* Animated Colorful Background */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-red-400 to-rose-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>

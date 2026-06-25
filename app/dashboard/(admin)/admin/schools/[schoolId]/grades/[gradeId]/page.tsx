@@ -20,7 +20,7 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
   const resolvedParams = await params;
 
   const grade = await prisma.schoolGrade.findUnique({
-    where: { id: resolvedParams.gradeId, schoolId: resolvedParams.schoolId },
+    where: { id: resolvedParams.gradeId },
     include: {
       school: true,
       students: {
@@ -35,7 +35,7 @@ export default async function GradeDetailsPage({ params }: { params: Promise<{ s
     orderBy: { gradeName: 'asc' }
   });
 
-  if (!grade) {
+  if (!grade || grade.schoolId !== resolvedParams.schoolId) {
     redirect(`/dashboard/admin/schools/${resolvedParams.schoolId}`);
   }
 
