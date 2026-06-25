@@ -12,6 +12,7 @@ import {
   createAssignment, deleteAssignment,
 } from "@/app/actions/adminAssignments";
 import { getDownloadPresignedUrl } from "@/app/actions/download";
+import { getAllSchoolGrades } from "@/app/actions/schools";
 
 type Tab = "assign" | "grade";
 
@@ -39,6 +40,7 @@ type Submission = {
 
 type CourseTopic = { id: string; title: string };
 type Course = { id: string; title: string; topics: CourseTopic[] };
+type SchoolGrade = Awaited<ReturnType<typeof getAllSchoolGrades>>[0];
 
 export default function AdminAssignmentsPage() {
   const [tab, setTab] = useState<Tab>("assign");
@@ -46,6 +48,7 @@ export default function AdminAssignmentsPage() {
   // Assign tab state
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [grades, setGrades] = useState<SchoolGrade[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState("");
@@ -61,10 +64,11 @@ export default function AdminAssignmentsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const [a, c, s] = await Promise.all([getAllAssignments(), getCoursesWithTopics(), getAllSubmissions()]);
+    const [a, c, s, g] = await Promise.all([getAllAssignments(), getCoursesWithTopics(), getAllSubmissions(), getAllSchoolGrades()]);
     if (a.success && a.assignments) setAssignments(a.assignments as Assignment[]);
     if (c.success && c.courses) setCourses(c.courses as Course[]);
     if (s.success && s.submissions) setSubmissions(s.submissions as Submission[]);
+    setGrades(g);
     setIsLoading(false);
   }, []);
 
@@ -251,8 +255,17 @@ export default function AdminAssignmentsPage() {
                     <textarea name="description" rows={3} placeholder="Describe what students need to submit..." className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Course *</label>
-                    <select required name="courseId" value={selectedCourseId} onChange={e => setSelectedCourseId(e.target.value)} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Target Grade (Optional)</label>
+                    <select name="schoolGradeId" className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+                      <option value="">Global (All Students)</option>
+                      {grades.map(g => (
+                        <option key={g.id} value={g.id}>{g.school.name} - {g.gradeName}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Course (Optional)</label>
+                    <select name="courseId" value={selectedCourseId} onChange={e => setSelectedCourseId(e.target.value)} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
                       <option value="">Select a course...</option>
                       {courses.map(c => (
                         <option key={c.id} value={c.id}>{c.title}</option>
@@ -260,8 +273,8 @@ export default function AdminAssignmentsPage() {
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Topic *</label>
-                    <select required name="courseTopicId" disabled={!selectedCourseId} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white disabled:bg-slate-50 disabled:text-slate-400">
+                    <label className="text-xs font-black uppercase text-slate-500 tracking-widest">Topic (Optional)</label>
+                    <select name="courseTopicId" disabled={!selectedCourseId} className="w-full h-10 px-3 rounded-lg border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white disabled:bg-slate-50 disabled:text-slate-400">
                       <option value="">Select a topic...</option>
                       {selectedCourseTopics.map(t => (
                         <option key={t.id} value={t.id}>{t.title}</option>

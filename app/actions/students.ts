@@ -28,15 +28,11 @@ export async function getAllStudents() {
     orderBy: { createdAt: "desc" },
     include: {
       enrollments: { include: { course: { select: { title: true } } } },
-      attendances: { select: { status: true } },
       submissions: { select: { score: true, status: true } },
     },
   });
 
   return students.map((s) => {
-    const total = s.attendances.length;
-    const present = s.attendances.filter((a) => a.status === "PRESENT").length;
-    const attendancePct = total > 0 ? Math.round((present / total) * 100) : null;
     const graded = s.submissions.filter((sub) => sub.score !== null);
     const avgScore =
       graded.length > 0
@@ -52,9 +48,7 @@ export async function getAllStudents() {
       age: s.age,
       createdAt: s.createdAt,
       enrolledCourses: s.enrollments.map((e) => e.course.title),
-      attendancePct,
       avgScore,
-      totalAttendance: total,
       totalSubmissions: s.submissions.length,
       studentStatus: s.studentStatus,
       customStatus: s.customStatus,
@@ -140,4 +134,40 @@ export async function updateStudentStatus(studentDbId: string, status: StudentSt
     },
   });
   revalidatePath("/dashboard/admin/students");
+}
+
+export async function markAssignmentsAsVisited() {
+  const session = await auth();
+  if (!session?.user?.id) return;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { lastAssignmentsVisit: new Date() },
+  });
+
+  revalidatePath("/dashboard", "layout");
+}
+
+export async function markSchoolAsVisited() {
+  const session = await auth();
+  if (!session?.user?.id) return;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { lastSchoolVisit: new Date() },
+  });
+
+  revalidatePath("/dashboard", "layout");
+}
+
+export async function markCalendarAsVisited() {
+  const session = await auth();
+  if (!session?.user?.id) return;
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { lastCalendarVisit: new Date() },
+  });
+
+  revalidatePath("/dashboard", "layout");
 }

@@ -16,7 +16,7 @@ export async function getAllCourses() {
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
-        select: { enrollments: true, attendances: true, topics: true },
+        select: { enrollments: true, topics: true },
       },
       enrollments: {
         include: {

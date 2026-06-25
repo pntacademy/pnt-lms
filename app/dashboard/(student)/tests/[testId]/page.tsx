@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { getStudentTestById, submitTestAttempt } from "@/app/actions/tests";
+import { getStudentTestById, submitTestAttempt, gradePracticeTest } from "@/app/actions/tests";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +19,10 @@ export default function TestRunnerPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
+  // Practice mode state
+  const [isRetesting, setIsRetesting] = useState(false);
+  const [practiceResult, setPracticeResult] = useState<{ score: number; totalMarks: number } | null>(null);
+
   useEffect(() => {
     getStudentTestById(testId)
       .then((data) => {
@@ -32,7 +36,8 @@ export default function TestRunnerPage() {
   }, [testId]);
 
   const handleOptionSelect = (questionId: string, option: string) => {
-    if (test?.submission) return; // Prevent edits if already submitted
+    if (test?.submission && !isRetesting) return; // Prevent edits if already submitted and not retesting
+    if (practiceResult) return; // Prevent edits after submitting practice test
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
@@ -46,15 +51,33 @@ export default function TestRunnerPage() {
 
     startTransition(async () => {
       try {
-        await submitTestAttempt(testId, answers);
-        // Refresh the page data to show results
-        const updatedData = await getStudentTestById(testId);
-        setTest(updatedData);
-        window.scrollTo(0, 0);
+        if (isRetesting) {
+          const result = await gradePracticeTest(testId, answers);
+          setPracticeResult({ score: result.score, totalMarks: result.totalMarks });
+          window.scrollTo(0, 0);
+        } else {
+          await submitTestAttempt(testId, answers);
+          // Refresh the page data to show results
+          const updatedData = await getStudentTestById(testId);
+          setTest(updatedData);
+          window.scrollTo(0, 0);
+        }
       } catch (err: any) {
         setError(err.message || "Failed to submit test.");
       }
     });
+  };
+
+  const startRetest = () => {
+    setIsRetesting(true);
+    setPracticeResult(null);
+    setAnswers({});
+  };
+
+  const exitRetest = () => {
+    setIsRetesting(false);
+    setPracticeResult(null);
+    setAnswers({});
   };
 
   if (isLoading) {
@@ -125,14 +148,20 @@ export default function TestRunnerPage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
         
-        {/* Results Banner if completed */}
-        {isCompleted && (
+        {/* Results Banner if completed and not retesting */}
+        {isCompleted && !isRetesting && (
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-8 text-white shadow-lg shadow-emerald-200 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h2 className="text-2xl font-black uppercase tracking-tight mb-2">Test Completed!</h2>
-              <p className="text-emerald-100 font-medium text-sm">
+              <p className="text-emerald-100 font-medium text-sm mb-4">
                 Your test was submitted successfully on {new Date(test.submission.createdAt).toLocaleString()}.
               </p>
+              <button
+                onClick={startRetest}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-emerald-700 rounded-xl font-black uppercase text-xs tracking-wider shadow-sm hover:-translate-y-0.5 transition-all"
+              >
+                Retest (Practice Mode)
+              </button>
             </div>
             <div className="bg-white/20 px-8 py-6 rounded-2xl border border-white/30 backdrop-blur-sm text-center shrink-0">
               <p className="text-[10px] font-black uppercase tracking-widest text-emerald-100 mb-1">Final Score</p>
@@ -143,6 +172,62 @@ export default function TestRunnerPage() {
                 {test.submission.score} / {test.submission.totalMarks} Marks
               </p>
             </div>
+          </div>
+        )}
+
+        {/* Practice Result Banner */}
+        {isRetesting && practiceResult && (
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-8 text-white shadow-lg shadow-indigo-200 flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+            <div>
+              <h2 className="text-2xl font-black uppercase tracking-tight mb-2 flex items-center gap-2">
+                <AlertCircle size={24} className="text-indigo-200" /> Practice Result
+              </h2>
+              <p className="text-indigo-100 font-medium text-sm mb-4">
+                This is a demo retest. Your official score has not been changed.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={startRetest}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 rounded-xl font-black uppercase text-xs tracking-wider shadow-sm hover:-translate-y-0.5 transition-all"
+                >
+                  Try Again
+                </button>
+                <button
+                  onClick={exitRetest}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-700 text-white border border-indigo-500 rounded-xl font-black uppercase text-xs tracking-wider hover:bg-indigo-800 transition-all"
+                >
+                  Back to Official Score
+                </button>
+              </div>
+            </div>
+            <div className="bg-white/20 px-8 py-6 rounded-2xl border border-white/30 backdrop-blur-sm text-center shrink-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-indigo-100 mb-1">Practice Score</p>
+              <div className="text-4xl font-black leading-none">
+                {Math.round((practiceResult.score / practiceResult.totalMarks) * 100)}%
+              </div>
+              <p className="text-sm font-bold mt-2 text-indigo-50">
+                {practiceResult.score} / {practiceResult.totalMarks} Marks
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Active Retest Banner */}
+        {isRetesting && !practiceResult && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              <AlertCircle size={20} className="text-amber-500" />
+              <div>
+                <p className="text-sm font-black text-amber-800 uppercase tracking-widest">Practice Mode Active</p>
+                <p className="text-xs text-amber-600 font-medium mt-0.5">Your official score will not be overwritten.</p>
+              </div>
+            </div>
+            <button
+              onClick={exitRetest}
+              className="text-xs font-bold text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Cancel Practice
+            </button>
           </div>
         )}
 
@@ -185,7 +270,7 @@ export default function TestRunnerPage() {
                           isSelected
                             ? "bg-amber-50 border-amber-400 text-amber-900"
                             : "bg-white border-slate-100 hover:border-amber-200 hover:bg-amber-50/50"
-                        } ${isCompleted ? "cursor-default opacity-90" : ""}`}
+                        } ${(isCompleted && !isRetesting) || !!practiceResult ? "cursor-default opacity-90" : ""}`}
                       >
                         <input
                           type="radio"
@@ -193,7 +278,7 @@ export default function TestRunnerPage() {
                           value={opt.text}
                           checked={isSelected}
                           onChange={() => handleOptionSelect(q.id, opt.text)}
-                          disabled={isCompleted}
+                          disabled={(isCompleted && !isRetesting) || !!practiceResult}
                           className="w-5 h-5 text-amber-500 border-slate-300 focus:ring-amber-500 disabled:opacity-50"
                         />
                         <span className="font-medium text-sm">{opt.text}</span>
@@ -207,15 +292,15 @@ export default function TestRunnerPage() {
         </div>
 
         {/* Submit Action */}
-        {!isCompleted && (
+        {(!isCompleted || (isRetesting && !practiceResult)) && (
           <div className="pt-6 pb-10 flex justify-end">
             <button
               onClick={handleSubmit}
               disabled={isPending}
-              className="flex items-center gap-3 px-8 py-4 bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl font-black uppercase text-sm tracking-wider shadow-xl shadow-slate-900/20 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+              className={`flex items-center gap-3 px-8 py-4 ${isRetesting ? 'bg-gradient-to-br from-indigo-600 to-purple-700 shadow-indigo-900/20' : 'bg-gradient-to-br from-slate-800 to-slate-900 shadow-slate-900/20'} text-white rounded-xl font-black uppercase text-sm tracking-wider shadow-xl hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0`}
             >
               {isPending ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle size={20} />}
-              Submit Test for Grading
+              {isRetesting ? 'Submit Practice Test' : 'Submit Test for Grading'}
             </button>
           </div>
         )}

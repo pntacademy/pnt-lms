@@ -8,7 +8,6 @@ import {
   Home,
   BookOpen,
   FileText,
-  ClipboardCheck,
   Calendar,
   Briefcase,
   User,
@@ -21,11 +20,7 @@ import {
 const mainLinks = [
   { href: "/dashboard", label: "Dashboard", icon: Home, exact: true },
   { href: "/dashboard/school", label: "My School", icon: Building },
-  { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
-  { href: "/dashboard/videos", label: "Videos", icon: Film },
-  { href: "/dashboard/assignments", label: "Assignments", icon: FileText },
-  { href: "/dashboard/tests", label: "Tests", icon: FileText },
-  { href: "/dashboard/attendance", label: "Attendance", icon: ClipboardCheck },
+  // { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart },
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
 ];
@@ -34,7 +29,7 @@ const bottomLinks = [
   { href: "/dashboard/profile", label: "Profile", icon: User },
 ];
 
-export function StudentSidebar() {
+export function StudentSidebar({ hasNewSchool = false, hasNewCalendar = false }: { hasNewSchool?: boolean, hasNewCalendar?: boolean }) {
   const pathname = usePathname();
 
   const isActive = (href: string, exact?: boolean) =>
@@ -52,6 +47,10 @@ export function StudentSidebar() {
     exact?: boolean;
   }) => {
     const active = isActive(href, exact);
+    const showNotification = 
+      (label === "My School" && hasNewSchool) ||
+      (label === "Calendar" && hasNewCalendar);
+
     return (
       <Link
         href={href}
@@ -61,11 +60,19 @@ export function StudentSidebar() {
             : "bg-transparent border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:shadow-sm hover:-translate-y-0.5"
         }`}
       >
-        <Icon
-          size={22}
-          strokeWidth={active ? 3 : 2}
-          className={active ? "text-slate-800" : "group-hover:text-slate-800"}
-        />
+        <div className="relative">
+          <Icon
+            size={22}
+            strokeWidth={active ? 3 : 2}
+            className={active ? "text-slate-800" : "group-hover:text-slate-800"}
+          />
+          {showNotification && (
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+            </span>
+          )}
+        </div>
         <span
           className={`text-sm uppercase font-black tracking-wider ${
             active ? "text-slate-800" : "group-hover:text-slate-800"

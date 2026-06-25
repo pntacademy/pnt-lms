@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { BarChart, BookOpen, CheckCircle2, ClipboardCheck, Trophy } from "lucide-react";
+import { BarChart, BookOpen, CheckCircle2, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { DownloadReportBtn } from "@/components/ui/DownloadReportBtn";
@@ -21,13 +21,7 @@ export default async function AnalyticsPage() {
   const enrollments = await prisma.enrollment.findMany({
     where: { userId: session.user.id },
     include: {
-      course: {
-        include: {
-          attendances: { where: { userId: session.user.id } },
-          // Instead of joining deeply, we will fetch assignments separately 
-          // because Assignments are denormalized with courseId.
-        }
-      }
+      course: true
     }
   });
 
@@ -50,11 +44,7 @@ export default async function AnalyticsPage() {
   // Analytics Calculation per course
   const courseAnalytics = enrollments.map(enrollment => {
     const course = enrollment.course;
-    
-    // Attendance
-    const totalClasses = course.attendances.length;
-    const presentClasses = course.attendances.filter(a => a.status === "PRESENT").length;
-    const attendancePct = totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 0;
+
 
     // Assignments specific to this course
     const courseAssignments = assignments.filter(a => a.courseId === course.id);
@@ -72,11 +62,6 @@ export default async function AnalyticsPage() {
 
     return {
       course,
-      attendance: {
-        total: totalClasses,
-        present: presentClasses,
-        pct: attendancePct
-      },
       assignments: {
         total: totalAssignments,
         submitted: submittedCount,
@@ -88,10 +73,6 @@ export default async function AnalyticsPage() {
   });
 
   // Aggregate stats
-  const totalClasses = courseAnalytics.reduce((acc, c) => acc + c.attendance.total, 0);
-  const totalPresent = courseAnalytics.reduce((acc, c) => acc + c.attendance.present, 0);
-  const overallAttendance = totalClasses > 0 ? Math.round((totalPresent / totalClasses) * 100) : 0;
-
   const allGraded = courseAnalytics.flatMap(c => c.assignments.graded > 0 ? [c.assignments.avgGrade] : []).filter(g => g !== null) as number[];
   const overallGrade = allGraded.length > 0 ? Math.round(allGraded.reduce((acc, g) => acc + g, 0) / allGraded.length) : null;
 
@@ -222,15 +203,14 @@ export default async function AnalyticsPage() {
             studentName={user?.name || "Student"} 
             studentId={user?.studentId}
             overallGrade={overallGrade}
-            overallAttendance={overallAttendance}
             courseAnalytics={courseAnalytics}
           />
         )}
       </header>
 
       {/* Aggregate Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-xl shadow-indigo-200/50 flex flex-col justify-between">
+      <div className="mb-10">
+        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-xl shadow-indigo-200/50 flex flex-col justify-between max-w-sm">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="text-indigo-200" size={24} strokeWidth={2.5} />
             <h2 className="text-sm font-black uppercase tracking-widest text-indigo-100">Overall Grade Average</h2>
@@ -239,18 +219,6 @@ export default async function AnalyticsPage() {
             <span className="text-5xl font-black tracking-tighter">{overallGrade !== null ? overallGrade : "—"}</span>
             <span className="text-lg font-bold text-indigo-200 mb-1">{overallGrade !== null ? "/100" : "No grades yet"}</span>
           </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl p-6 text-white shadow-xl shadow-green-200/50 flex flex-col justify-between">
-          <div className="flex items-center gap-2 mb-4">
-            <ClipboardCheck className="text-green-200" size={24} strokeWidth={2.5} />
-            <h2 className="text-sm font-black uppercase tracking-widest text-green-100">Overall Attendance</h2>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-5xl font-black tracking-tighter">{overallAttendance}%</span>
-            <span className="text-lg font-bold text-green-200 mb-1">Present</span>
-          </div>
-          <Progress value={overallAttendance} className="h-2 mt-4 bg-green-700/50 [&>div]:bg-white" />
         </div>
       </div>
 
@@ -266,7 +234,7 @@ export default async function AnalyticsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {courseAnalytics.map(({ course, attendance, assignments }) => (
+          {courseAnalytics.map(({ course, assignments }) => (
             <Card key={course.id} className="border-2 border-slate-100 shadow-lg shadow-slate-200/50 rounded-xl overflow-hidden bg-white">
               <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
                 <CardTitle className="text-lg font-black uppercase text-slate-800 truncate">
@@ -274,21 +242,7 @@ export default async function AnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="grid grid-cols-2 divide-x divide-slate-100">
-                  {/* Attendance Section */}
-                  <div className="p-6 flex flex-col justify-center items-center text-center">
-                    <div className="relative w-24 h-24 flex items-center justify-center mb-4">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" className="text-slate-100 stroke-current" strokeWidth="12" fill="transparent" />
-                        <circle cx="50" cy="50" r="40" className={`${attendance.pct >= 75 ? "text-green-500" : attendance.pct >= 50 ? "text-amber-500" : "text-red-500"} stroke-current transition-all duration-1000 ease-in-out`} strokeWidth="12" fill="transparent" strokeDasharray={`${attendance.pct * 2.51} 251`} strokeLinecap="round" />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-2xl font-black text-slate-800">{attendance.pct}%</span>
-                      </div>
-                    </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Attendance</p>
-                    <p className="text-xs font-bold text-slate-500 mt-1">{attendance.present} / {attendance.total} Classes</p>
-                  </div>
+                <div className="grid grid-cols-1 divide-x divide-slate-100">
 
                   {/* Grades Section */}
                   <div className="p-6 flex flex-col justify-center items-center text-center">

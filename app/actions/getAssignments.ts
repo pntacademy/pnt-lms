@@ -10,18 +10,29 @@ export async function getStudentAssignments() {
   }
 
   try {
-    // Get student's enrollments
+    // Get student's enrollments and grade
     const enrollments = await prisma.enrollment.findMany({
       where: { userId: session.user.id },
       select: { courseId: true }
     });
     const courseIds = enrollments.map(e => e.courseId);
+    const schoolGradeId = (session.user as any).schoolGradeId;
 
     const assignments = await prisma.assignment.findMany({
       where: {
-        OR: [
-          { courseId: { in: courseIds } },
-          { courseId: null } // Include legacy project-based assignments
+        AND: [
+          {
+            OR: [
+              { schoolGradeId: schoolGradeId || "NO_GRADE_MATCH" },
+              { schoolGradeId: null }
+            ]
+          },
+          {
+            OR: [
+              { courseId: { in: courseIds } },
+              { courseId: null }
+            ]
+          }
         ]
       },
       include: {

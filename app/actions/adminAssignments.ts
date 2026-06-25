@@ -75,16 +75,18 @@ export async function createAssignment(formData: FormData) {
   const description = (formData.get("description") as string)?.trim() || null;
   const courseTopicId = (formData.get("courseTopicId") as string) || null;
   const courseId = (formData.get("courseId") as string) || null;
+  const schoolGradeId = (formData.get("schoolGradeId") as string) || null;
   const dueDateStr = formData.get("dueDate") as string;
   const dueDate = dueDateStr ? new Date(dueDateStr) : null;
 
   if (!title) return { error: "Title is required" };
-  if (!courseTopicId) return { error: "Please select a topic" };
-  if (!courseId) return { error: "Please select a course" };
+  // If schoolGradeId is provided, course and topic might be optional. Let's loosen the strict requirements if schoolGradeId is set.
+  if (!schoolGradeId && !courseTopicId) return { error: "Please select a topic or target grade" };
+  if (!schoolGradeId && !courseId) return { error: "Please select a course or target grade" };
 
   try {
     const assignment = await prisma.assignment.create({
-      data: { title, description, courseTopicId, courseId, dueDate },
+      data: { title, description, courseTopicId, courseId, schoolGradeId, dueDate },
     });
     revalidatePath("/dashboard/admin/assignments");
     revalidatePath("/dashboard/assignments");
@@ -190,7 +192,7 @@ export async function gradeSubmission(submissionId: string, score: number, feedb
 
     revalidatePath("/dashboard/admin/assignments");
     revalidatePath("/dashboard/assignments");
-    
+
     return { success: true, submission: updated };
   } catch (error) {
     console.error("Error grading submission:", error);
