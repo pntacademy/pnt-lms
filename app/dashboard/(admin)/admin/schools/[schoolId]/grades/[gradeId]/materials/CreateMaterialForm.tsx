@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Save, Video, FileText, Link as LinkIcon, UploadCloud, Heading } from "lucide-react";
 import { createGradeMaterial } from "@/app/actions/materials";
 import { getUploadPresignedUrl } from "@/app/actions/upload";
+import { toast } from "react-hot-toast";
 
 export function CreateMaterialForm({ gradeId }: { gradeId: string }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,12 +55,12 @@ export function CreateMaterialForm({ gradeId }: { gradeId: string }) {
         fileUrl
       });
       
-      alert("Material added successfully!");
+      toast.success("Material added successfully!");
       form.reset();
       setFileStatus(null);
     } catch (error) {
       console.error(error);
-      alert("Failed to save material. If you were uploading a large file, it may have failed.");
+      toast.error("Failed to save material. If you were uploading a large file, it may have failed.");
       setFileStatus("File upload failed.");
     } finally {
       setIsLoading(false);

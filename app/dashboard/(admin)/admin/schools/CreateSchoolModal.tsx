@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X, Building, MapPin, User } from "lucide-react";
 import { createSchool } from "@/app/actions/schools";
+import { toast } from "react-hot-toast";
 
 export function CreateSchoolModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,10 +20,11 @@ export function CreateSchoolModal() {
 
     try {
       await createSchool({ name, location, coordinatorName });
+      toast.success("School created successfully!");
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to create school.");
+      toast.error("Failed to create school.");
     } finally {
       setIsLoading(false);
     }

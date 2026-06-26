@@ -4,6 +4,8 @@ import { Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { deleteSchoolGrade } from "@/app/actions/schools";
 
+import { toast } from "react-hot-toast";
+
 export function DeleteGradeButton({ gradeId, schoolId, gradeName }: { gradeId: string, schoolId: string, gradeName: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -13,9 +15,10 @@ export function DeleteGradeButton({ gradeId, schoolId, gradeName }: { gradeId: s
     setIsDeleting(true);
     try {
       await deleteSchoolGrade(gradeId, schoolId);
+      toast.success("Grade deleted successfully");
     } catch (error) {
       console.error(error);
-      alert("Failed to delete grade. Please make sure there are no existing dependencies.");
+      toast.error("Failed to delete grade. Please make sure there are no existing dependencies.");
     } finally {
       setIsDeleting(false);
     }

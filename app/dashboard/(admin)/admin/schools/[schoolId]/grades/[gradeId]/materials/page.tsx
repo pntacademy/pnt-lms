@@ -34,7 +34,7 @@ export default async function GradeMaterialsPage({ params, searchParams }: { par
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-slate-50 pt-6 pb-4 -mt-6 border-b border-slate-200 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link 
             href={`/dashboard/admin/schools/${grade.schoolId}/grades/${grade.id}`} 

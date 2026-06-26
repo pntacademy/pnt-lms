@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-hot-toast";
 import { Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { deleteSchool } from "@/app/actions/schools";
@@ -15,7 +16,7 @@ export function DeleteSchoolButton({ schoolId, schoolName }: { schoolId: string,
       setShowModal(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to delete school. Please make sure there are no existing dependencies.");
+      toast.error("Failed to delete school. Please make sure there are no existing dependencies.");
     } finally {
       setIsDeleting(false);
     }

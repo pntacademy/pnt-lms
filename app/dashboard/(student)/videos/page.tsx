@@ -68,9 +68,9 @@ export default async function StudentVideosPage({
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-7xl mx-auto flex flex-col">
       <NotificationClearer type="videos" />
-      <header className="mb-6 shrink-0">
+      <header className="sticky top-[61px] md:top-0 z-30 bg-slate-50 pt-4 md:pt-8 pb-4 -mx-4 md:-mx-8 px-4 md:px-8 -mt-4 md:-mt-8 mb-6 shrink-0 border-b border-slate-200 shadow-sm">
         {!activeVideo && (
-          <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
+          <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 w-fit bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
             <ArrowLeft size={16} /> Back to My School
           </Link>
         )}

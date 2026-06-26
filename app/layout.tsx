@@ -40,6 +40,8 @@ export const viewport = {
   themeColor: "#1e293b",
 };
 
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -51,7 +53,10 @@ export default function RootLayout({
       className={cn("antialiased", geistSans.variable, geistMono.variable, jetbrainsMono.variable, pixelFont.variable)}
       suppressHydrationWarning
     >
-      <body className="min-h-screen flex flex-col font-sans" suppressHydrationWarning>{children}</body>
+      <body className="min-h-screen flex flex-col font-sans" suppressHydrationWarning>
+        <Toaster position="top-center" />
+        {children}
+      </body>
     </html>
   );
 }

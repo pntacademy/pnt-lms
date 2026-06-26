@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, useEffect, useTransition, useCallback } from "react";
-import { Plus, Search, Trash2, FileText, Settings, BookOpen } from "lucide-react";
+import { Plus, Search, Trash2, FileText, Settings, BookOpen, AlertTriangle, Loader2 } from "lucide-react";
 import { getAllTests, deleteTest, togglePublishTest } from "@/app/actions/tests";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export function AdminTestsTab({ schoolId, gradeId }: { schoolId: string; gradeId: string }) {
   const [tests, setTests] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  const [deleteModalData, setDeleteModalData] = useState<{ id: string, title: string } | null>(null);
 
   const load = useCallback(async () => {
     const data = await getAllTests();
@@ -27,11 +30,17 @@ export function AdminTestsTab({ schoolId, gradeId }: { schoolId: string; gradeId
     (t.course?.title || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleDelete = (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete the test "${title}"? This cannot be undone.`)) return;
+  const handleDelete = () => {
+    if (!deleteModalData) return;
     startTransition(async () => {
-      await deleteTest(id);
-      load();
+      try {
+        await deleteTest(deleteModalData.id);
+        toast.success("Test deleted successfully");
+        setDeleteModalData(null);
+        load();
+      } catch (e: any) {
+        toast.error(e.message || "Failed to delete test");
+      }
     });
   };
 
@@ -105,7 +114,7 @@ export function AdminTestsTab({ schoolId, gradeId }: { schoolId: string; gradeId
                       {test.title}
                     </h3>
                     <button
-                      onClick={() => handleDelete(test.id, test.title)}
+                      onClick={() => setDeleteModalData({ id: test.id, title: test.title })}
                       disabled={isPending}
                       className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0 disabled:opacity-50"
                     >
@@ -164,6 +173,46 @@ export function AdminTestsTab({ schoolId, gradeId }: { schoolId: string; gradeId
           </div>
         )}
       </div>
+
+      {deleteModalData && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" 
+          onClick={(e) => { e.preventDefault(); setDeleteModalData(null); }}
+        >
+          <div 
+            className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 md:p-8">
+              <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mb-6 border border-red-200">
+                <AlertTriangle className="w-7 h-7 text-red-600" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Delete Test?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium">
+                Are you sure you want to completely delete <strong className="text-slate-900 font-bold">"{deleteModalData.title}"</strong>? This action cannot be undone.
+              </p>
+              
+              <div className="flex items-center gap-3 w-full">
+                <button
+                  onClick={(e) => { e.preventDefault(); setDeleteModalData(null); }}
+                  className="flex-1 px-4 py-3 border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors uppercase text-xs tracking-wider"
+                  disabled={isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); handleDelete(); }}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-70 shadow-sm uppercase text-xs tracking-wider"
+                  disabled={isPending}
+                >
+                  {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                  {isPending ? "Deleting..." : "Yes, Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

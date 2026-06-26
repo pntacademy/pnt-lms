@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X, GraduationCap } from "lucide-react";
 import { createSchoolGrade } from "@/app/actions/schools";
+import { toast } from "react-hot-toast";
 
 export function CreateGradeModal({ schoolId }: { schoolId: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,10 +18,11 @@ export function CreateGradeModal({ schoolId }: { schoolId: string }) {
 
     try {
       await createSchoolGrade({ schoolId, gradeName });
+      toast.success("Grade added successfully!");
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to add grade.");
+      toast.error("Failed to add grade.");
     } finally {
       setIsLoading(false);
     }

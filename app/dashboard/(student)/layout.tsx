@@ -83,9 +83,11 @@ export default async function DashboardLayout({
     orderBy: { createdAt: 'desc' }
   });
 
-  const hasNewTests = !!latestTest && (!dbUser?.lastTestsVisit || latestTest.createdAt > dbUser.lastTestsVisit);
-  const hasNewVideos = !!latestVideo && (!dbUser?.lastVideosVisit || latestVideo.createdAt > dbUser.lastVideosVisit);
-  const hasNewAssignments = !!latestAssignment && (!dbUser?.lastAssignmentsVisit || latestAssignment.createdAt > dbUser.lastAssignmentsVisit);
+  const safeDate = (d: any) => (d ? new Date(d).getTime() : 0);
+
+  const hasNewTests = !!latestTest && (!dbUser?.lastTestsVisit || safeDate(latestTest.createdAt) > safeDate(dbUser.lastTestsVisit));
+  const hasNewVideos = !!latestVideo && (!dbUser?.lastVideosVisit || safeDate(latestVideo.createdAt) > safeDate(dbUser.lastVideosVisit));
+  const hasNewAssignments = !!latestAssignment && (!dbUser?.lastAssignmentsVisit || safeDate(latestAssignment.createdAt) > safeDate(dbUser.lastAssignmentsVisit));
   
   // Calculate if My School should have a red dot
   // We check if there are new materials, OR if any of the sub-categories have new items
@@ -97,7 +99,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-slate-50">
       <StudentSidebar hasNewSchool={hasNewSchool} hasNewCalendar={hasNewCalendar} />
-      <main className="flex-1 pb-20 md:pb-0 relative overflow-x-hidden">
+      <main className="flex-1 pb-20 md:pb-0 relative overflow-x-clip">
         {/* Mobile top header — logo only visible on small screens */}
 
         <header className="md:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white border-b border-slate-200 shadow-sm">

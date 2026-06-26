@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { FileText, CheckCircle2, Clock, UploadCloud, FileUp, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,8 +52,8 @@ export default function AssignmentsPage() {
   };
 
   const handleSubmit = async () => {
-    if (!file) return alert("Please select a file to upload");
-    if (!selectedAssignmentId) return alert("Please select an assignment");
+    if (!file) return toast.error("Please select a file to upload");
+    if (!selectedAssignmentId) return toast.error("Please select an assignment");
 
     setIsUploading(true);
 
@@ -82,9 +83,9 @@ export default function AssignmentsPage() {
       setFile(null);
       setStudentNotes("");
       if (fileInputRef.current) fileInputRef.current.value = "";
-      alert("✅ Assignment submitted successfully!");
+      toast.success("Assignment submitted successfully!");
     } catch (err: any) {
-      alert(err.message || "Something went wrong.");
+      toast.error(err.message || "Something went wrong.");
     } finally {
       setIsUploading(false);
     }
@@ -99,8 +100,8 @@ export default function AssignmentsPage() {
   return (
     <div className="min-h-full font-sans text-slate-800 p-4 md:p-8 max-w-6xl mx-auto space-y-8">
       <NotificationClearer type="assignments" />
-      <header className="mb-8">
-        <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
+      <header className="sticky top-[61px] md:top-0 z-30 bg-slate-50 pt-4 md:pt-8 pb-4 -mx-4 md:-mx-8 px-4 md:px-8 -mt-4 md:-mt-8 mb-8 border-b border-slate-200 shadow-sm">
+        <Link href="/dashboard/school" className="inline-flex items-center gap-2 mb-4 px-4 py-2 w-fit bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all">
           <ArrowLeft size={16} /> Back to My School
         </Link>
         <h1 className="text-3xl md:text-4xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-3">
