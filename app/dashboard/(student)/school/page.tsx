@@ -92,7 +92,7 @@ export default async function SchoolPortalPage() {
       date: m.createdAt,
       color: "text-blue-500",
       bg: "bg-blue-50",
-      link: null
+      link: m.videoUrl ? `/dashboard/videos?v=${m.id}` : "/dashboard/videos"
     })),
     ...recentTests.map((t: any) => ({
       id: `test-${t.id}`,
@@ -110,7 +110,7 @@ export default async function SchoolPortalPage() {
       date: v.createdAt,
       color: "text-indigo-500",
       bg: "bg-indigo-50",
-      link: "/dashboard/videos"
+      link: `/dashboard/videos?v=${v.id}`
     })),
     ...recentAssignments.map((a: any) => ({
       id: `assn-${a.id}`,
@@ -125,9 +125,11 @@ export default async function SchoolPortalPage() {
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 15);
 
-  const hasNewTests = recentTests.length > 0 && (!(user as any).lastTestsVisit || recentTests[0].createdAt > (user as any).lastTestsVisit);
-  const hasNewVideos = recentVideos.length > 0 && (!(user as any).lastVideosVisit || recentVideos[0].createdAt > (user as any).lastVideosVisit);
-  const hasNewAssignments = recentAssignments.length > 0 && (!(user as any).lastAssignmentsVisit || recentAssignments[0].createdAt > (user as any).lastAssignmentsVisit);
+  const safeDate = (d: any) => (d ? new Date(d).getTime() : 0);
+  
+  const hasNewTests = recentTests.length > 0 && (!(user as any).lastTestsVisit || safeDate(recentTests[0].createdAt) > safeDate((user as any).lastTestsVisit));
+  const hasNewVideos = recentVideos.length > 0 && (!(user as any).lastVideosVisit || safeDate(recentVideos[0].createdAt) > safeDate((user as any).lastVideosVisit));
+  const hasNewAssignments = recentAssignments.length > 0 && (!(user as any).lastAssignmentsVisit || safeDate(recentAssignments[0].createdAt) > safeDate((user as any).lastAssignmentsVisit));
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">

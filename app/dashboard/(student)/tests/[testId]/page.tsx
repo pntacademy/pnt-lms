@@ -5,6 +5,7 @@ import { getStudentTestById, submitTestAttempt, gradePracticeTest } from "@/app/
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 type TestDetails = Awaited<ReturnType<typeof getStudentTestById>>;
 
@@ -22,6 +23,8 @@ export default function TestRunnerPage() {
   // Practice mode state
   const [isRetesting, setIsRetesting] = useState(false);
   const [practiceResult, setPracticeResult] = useState<{ score: number; totalMarks: number } | null>(null);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     getStudentTestById(testId)
@@ -46,8 +49,15 @@ export default function TestRunnerPage() {
     
     const unanswered = test.questions.length - Object.keys(answers).length;
     if (unanswered > 0) {
-      if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to submit?`)) return;
+      setShowConfirmModal(true);
+      return;
     }
+    executeSubmit();
+  };
+
+  const executeSubmit = () => {
+    if (!test) return;
+    setShowConfirmModal(false);
 
     startTransition(async () => {
       try {
@@ -55,15 +65,17 @@ export default function TestRunnerPage() {
           const result = await gradePracticeTest(testId, answers);
           setPracticeResult({ score: result.score, totalMarks: result.totalMarks });
           window.scrollTo(0, 0);
+          toast.success("Practice test submitted!");
         } else {
           await submitTestAttempt(testId, answers);
           // Refresh the page data to show results
           const updatedData = await getStudentTestById(testId);
           setTest(updatedData);
           window.scrollTo(0, 0);
+          toast.success("Test submitted successfully!");
         }
       } catch (err: any) {
-        setError(err.message || "Failed to submit test.");
+        toast.error(err.message || "Failed to submit test.");
       }
     });
   };
@@ -234,9 +246,11 @@ export default function TestRunnerPage() {
         {/* Question List */}
         <div className="space-y-6">
           {test.questions.map((q, index) => {
-            const studentAnswer = isCompleted 
-              ? (test.submission.answers as Record<string, string>)[q.id] 
-              : answers[q.id];
+            const studentAnswer = isRetesting 
+              ? answers[q.id] 
+              : (isCompleted 
+                  ? (test.submission.answers as Record<string, string>)[q.id] 
+                  : answers[q.id]);
 
             return (
               <div key={q.id} className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
@@ -305,6 +319,38 @@ export default function TestRunnerPage() {
           </div>
         )}
       </div>
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-xl max-w-sm w-full p-8 animate-in zoom-in-95 duration-200 border border-slate-100">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center rotate-3">
+                <AlertCircle size={32} strokeWidth={2.5} />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Unanswered Questions</h3>
+                <p className="text-slate-500 mt-2 text-sm font-medium">
+                  You have <span className="font-bold text-amber-600 px-1">{test.questions.length - Object.keys(answers).length}</span> unanswered question(s). Are you sure you want to submit?
+                </p>
+              </div>
+              <div className="flex items-center gap-3 w-full pt-4">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors uppercase text-xs tracking-wider"
+                >
+                  Go Back
+                </button>
+                <button
+                  onClick={executeSubmit}
+                  className="flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold shadow-md transition-colors uppercase text-xs tracking-wider"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

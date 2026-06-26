@@ -6,6 +6,7 @@ import Papa from "papaparse";
 import { bulkUploadStudents } from "@/app/actions/schools";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { toast } from "react-hot-toast";
 
 export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId: string; gradeId: string; gradeName: string }) {
   const [isUploading, setIsUploading] = useState(false);
@@ -34,7 +35,7 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
             }));
 
           if (validStudents.length === 0) {
-            alert("No valid students found in CSV. Please ensure you have a 'Name' column.");
+            toast.error("No valid students found in CSV. Please ensure you have a 'Name' column.");
             setIsUploading(false);
             return;
           }
@@ -43,7 +44,7 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
           setRoster(generatedRoster);
         } catch (error) {
           console.error(error);
-          alert("Failed to process bulk upload.");
+          toast.error("Failed to process bulk upload.");
         } finally {
           setIsUploading(false);
           if (fileInputRef.current) fileInputRef.current.value = '';
@@ -51,7 +52,7 @@ export function BulkUploadStudents({ schoolId, gradeId, gradeName }: { schoolId:
       },
       error: (error) => {
         console.error("Error parsing CSV", error);
-        alert("Failed to parse CSV file.");
+        toast.error("Failed to parse CSV file.");
         setIsUploading(false);
       }
     });

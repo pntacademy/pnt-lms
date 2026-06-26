@@ -4,6 +4,8 @@ import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { getStudentDownloadPresignedUrl } from "@/app/actions/download";
 
+import { toast } from "react-hot-toast";
+
 export function AssignmentFileDownloadButton({ objectKey }: { objectKey: string }) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -19,7 +21,7 @@ export function AssignmentFileDownloadButton({ objectKey }: { objectKey: string 
       window.open(res.presignedUrl, "_blank");
     } catch (error) {
       console.error(error);
-      alert("Failed to download the assignment file.");
+      toast.error("Failed to download the assignment file.");
     } finally {
       setIsDownloading(false);
     }

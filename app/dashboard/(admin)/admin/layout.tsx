@@ -20,7 +20,7 @@ export default async function AdminLayout({
   return (
     <div className="flex min-h-screen bg-slate-50">
       <AdminSidebar role={role} />
-      <main className="flex-1 pb-20 md:pb-0 relative overflow-x-hidden">
+      <main className="flex-1 pb-20 md:pb-0 relative overflow-x-clip">
         {/* Mobile top header — logo only on small screens */}
         <header className="md:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-slate-900 border-b border-slate-800 shadow-md">
           <Image src="/logo.svg" alt="PNT Academy" width={36} height={36} className="rounded-lg" />

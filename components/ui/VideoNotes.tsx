@@ -97,12 +97,12 @@ export function VideoNotes({ videoId, videoTitle }: VideoNotesProps) {
           </button>
         </div>
       </div>
-      <div className="p-4 flex-1">
+      <div className="p-4 flex-1 flex flex-col min-h-0">
         <textarea
           value={notes}
           onChange={handleNotesChange}
           placeholder="Write your notes here... They will be automatically saved to your browser."
-          className="w-full h-full p-4 text-sm text-slate-700 font-medium bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
+          className="w-full flex-1 p-4 text-sm text-slate-700 font-medium bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
         />
       </div>
     </div>

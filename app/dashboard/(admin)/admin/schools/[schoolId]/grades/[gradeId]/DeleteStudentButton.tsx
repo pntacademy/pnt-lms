@@ -4,6 +4,8 @@ import { Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { deleteStudent } from "@/app/actions/schools";
 
+import { toast } from "react-hot-toast";
+
 export function DeleteStudentButton({ studentId, schoolId, gradeId, studentName }: { studentId: string, schoolId: string, gradeId: string, studentName: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -13,9 +15,10 @@ export function DeleteStudentButton({ studentId, schoolId, gradeId, studentName 
     setIsDeleting(true);
     try {
       await deleteStudent(studentId, schoolId, gradeId);
+      toast.success("Student deleted successfully");
     } catch (error) {
       console.error(error);
-      alert("Failed to delete student");
+      toast.error("Failed to delete student");
       setIsDeleting(false);
     }
   };

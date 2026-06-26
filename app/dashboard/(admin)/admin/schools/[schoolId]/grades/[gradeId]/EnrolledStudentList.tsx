@@ -7,6 +7,7 @@ import { PasswordVisibilityToggle } from "./PasswordVisibilityToggle";
 import { DeleteStudentButton } from "./DeleteStudentButton";
 import { DownloadRosterButton } from "./DownloadRosterButton";
 import { StudentStatus } from "@prisma/client";
+import { toast } from "react-hot-toast";
 
 type Student = {
   id: string;
@@ -84,9 +85,9 @@ export function EnrolledStudentList({
       await bulkUpdateSchoolGrade(Array.from(selectedIds), targetGradeId, schoolId, gradeId);
       setShowGradeModal(false);
       setSelectedIds(new Set());
-      alert("Students moved successfully.");
+      toast.success("Students moved successfully.");
     } catch (e: any) {
-      alert("Error moving students: " + e.message);
+      toast.error("Error moving students: " + e.message);
     } finally {
       setIsLoading(false);
     }
@@ -100,9 +101,9 @@ export function EnrolledStudentList({
     try {
       await bulkUnenrollStudents(Array.from(selectedIds), schoolId, gradeId);
       setSelectedIds(new Set());
-      alert("Students unenrolled successfully.");
+      toast.success("Students unenrolled successfully.");
     } catch (e: any) {
-      alert("Error unenrolling students: " + e.message);
+      toast.error("Error unenrolling students: " + e.message);
     } finally {
       setIsLoading(false);
     }

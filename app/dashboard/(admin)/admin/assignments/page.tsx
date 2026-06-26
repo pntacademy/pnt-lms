@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useTransition, useCallback } from "react";
 import {
-  FileCheck2, CheckCircle2, Download, Search, X,
+  FileCheck2, CheckCircle, Download, Search, X,
   ChevronRight, Plus, Trash2, BookOpen, Calendar,
-  ClipboardList, Users,
+  ClipboardList, Users, AlertTriangle, Loader2,
 } from "lucide-react";
 import {
   getAllSubmissions, gradeSubmission,
@@ -13,6 +13,7 @@ import {
 } from "@/app/actions/adminAssignments";
 import { getDownloadPresignedUrl } from "@/app/actions/download";
 import { getAllSchoolGrades } from "@/app/actions/schools";
+import { toast } from "react-hot-toast";
 
 type Tab = "assign" | "grade";
 
@@ -62,6 +63,7 @@ export default function AdminAssignmentsPage() {
   const [feedback, setFeedback] = useState("");
   const [isGrading, setIsGrading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteModalData, setDeleteModalData] = useState<{ id: string, title: string } | null>(null);
 
   const load = useCallback(async () => {
     const [a, c, s, g] = await Promise.all([getAllAssignments(), getCoursesWithTopics(), getAllSubmissions(), getAllSchoolGrades()]);
@@ -93,34 +95,44 @@ export default function AdminAssignmentsPage() {
   };
 
   // ── Delete Assignment ──────────────────────────────────────────
-  const handleDelete = (id: string, title: string) => {
-    if (!confirm(`Delete "${title}"? All student submissions for this assignment will also be removed.`)) return;
-    startTransition(async () => { await deleteAssignment(id); load(); });
+  const handleDelete = () => {
+    if (!deleteModalData) return;
+    startTransition(async () => { 
+      try {
+        await deleteAssignment(deleteModalData.id); 
+        toast.success("Assignment deleted successfully");
+        setDeleteModalData(null);
+        load(); 
+      } catch (e: any) {
+        toast.error("Failed to delete assignment");
+      }
+    });
   };
 
   // ── Grade Submission ──────────────────────────────────────────
   const handleDownload = async (objectKey: string | null, filename: string) => {
-    if (!objectKey) return alert("No file attached");
+    if (!objectKey) return toast.error("No file attached");
     try {
       const { presignedUrl, error } = await getDownloadPresignedUrl(objectKey);
       if (error || !presignedUrl) throw new Error(error || "Failed to generate download URL");
       const a = document.createElement("a");
       a.href = presignedUrl; a.target = "_blank"; a.download = filename;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    } catch (err: any) { alert(err.message); }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleGradeSubmit = async () => {
     if (!selectedSubmission) return;
     const numScore = parseInt(score);
-    if (isNaN(numScore) || numScore < 0 || numScore > 100) return alert("Enter a score between 0–100");
+    if (isNaN(numScore) || numScore < 0 || numScore > 100) return toast.error("Enter a score between 0–100");
     setIsGrading(true);
     try {
       const res = await gradeSubmission(selectedSubmission.id, numScore, feedback);
       if (res.error) throw new Error(res.error);
       setSelectedSubmission(null); setScore(""); setFeedback("");
+      toast.success("Submission graded successfully");
       load();
-    } catch (err: any) { alert(err.message); }
+    } catch (err: any) { toast.error(err.message); }
     finally { setIsGrading(false); }
   };
 
@@ -206,7 +218,7 @@ export default function AdminAssignmentsPage() {
                         <h3 className="font-black text-sm text-slate-800 leading-tight">{a.title}</h3>
                       </div>
                       <button
-                        onClick={() => handleDelete(a.id, a.title)}
+                        onClick={() => setDeleteModalData({ id: a.id, title: a.title })}
                         className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                       >
                         <Trash2 size={15} />
@@ -409,6 +421,46 @@ export default function AdminAssignmentsPage() {
                 <button onClick={handleGradeSubmit} disabled={isGrading || !score}
                   className="w-full py-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl font-black uppercase text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50">
                   {isGrading ? "Saving..." : "Save Grade & Feedback"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModalData && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" 
+          onClick={(e) => { e.preventDefault(); setDeleteModalData(null); }}
+        >
+          <div 
+            className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 md:p-8">
+              <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mb-6 border border-red-200">
+                <AlertTriangle className="w-7 h-7 text-red-600" />
+              </div>
+              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Delete Assignment?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium">
+                Are you sure you want to completely delete <strong className="text-slate-900 font-bold">"{deleteModalData.title}"</strong>? All student submissions for this assignment will also be removed.
+              </p>
+              
+              <div className="flex items-center gap-3 w-full">
+                <button
+                  onClick={(e) => { e.preventDefault(); setDeleteModalData(null); }}
+                  className="flex-1 px-4 py-3 border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors uppercase text-xs tracking-wider"
+                  disabled={isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); handleDelete(); }}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-70 shadow-sm uppercase text-xs tracking-wider"
+                  disabled={isPending}
+                >
+                  {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                  {isPending ? "Deleting..." : "Yes, Delete"}
                 </button>
               </div>
             </div>
