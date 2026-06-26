@@ -63,12 +63,23 @@ export default function AssignmentsPage() {
       if (error || !presignedUrl || !objectKey) throw new Error(error || "Failed to get upload URL");
 
       // 2. Upload directly to Cloudflare R2
-      const uploadRes = await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
-        headers: { "Content-Type": file.type },
-      });
-      if (!uploadRes.ok) throw new Error("Failed to upload file to cloud storage");
+      let uploadRes;
+      try {
+        uploadRes = await fetch(presignedUrl, {
+          method: "PUT",
+          body: file,
+          headers: { "Content-Type": file.type },
+        });
+      } catch (fetchErr: any) {
+        console.error("Network error during file upload:", fetchErr);
+        throw new Error(`Upload network error (CORS or connection issue). Details: ${fetchErr.message}`);
+      }
+
+      if (!uploadRes.ok) {
+        const errorText = await uploadRes.text().catch(() => "No response body");
+        console.error("Upload failed with HTTP status:", uploadRes.status, errorText);
+        throw new Error(`Upload failed (HTTP ${uploadRes.status}): ${errorText.substring(0, 100)}`);
+      }
 
       // 3. Save submission record to DB
       const dbResult = await submitAssignment(selectedAssignmentId, objectKey, studentNotes);
